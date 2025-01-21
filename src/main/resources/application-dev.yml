@@ -1,0 +1,47 @@
+#Configuracion de puerto
+server:
+  port: ${PORT}
+#Concifuracion de la base de datos
+#Variables de entorno
+spring:
+  datasource:
+    url: ${URL}
+    username: ${USER_NAME}
+    password: ${PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  #Configuracion Springdoc
+  #Swagger
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
+# Configuracion de logger
+# Para desarrollo
+logging:
+  level:
+    root: info
+    org:
+      springframework: debug
+  file:
+    name: logs/application.log
+
+
+  # Configuración de  APIs externas
+#external:
+#    api1:
+#      url: https://api1.dev.com
+#      key: dev-api-key-1
+#    api2:
+#      url: https://api2.dev.com
+#      key: dev-api-key-2

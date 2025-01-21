@@ -1,0 +1,6 @@
+#Concifuracion de la base de datos
+#Perfiles
+spring:
+  profiles:
+    active: dev
+
