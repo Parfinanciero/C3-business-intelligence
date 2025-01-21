@@ -4,6 +4,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 public class Controller {
 
-
+    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
 
     //obtener gastos por mes de un usuario
@@ -58,9 +60,9 @@ public class Controller {
     )
     @GetMapping("/goals")
     public ResponseEntity<String> getGoalsByUser() {
-//        log.info("iniciado metodo");
+      logger.info("iniciado metodo");
         String response = "Metas cumplidas o no";
-//        log.info("datos obtenidos con respuesta {}",response);
+        logger.info("datos obtenidos con respuesta {}",response);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
