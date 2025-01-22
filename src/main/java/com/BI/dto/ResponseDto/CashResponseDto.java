@@ -1,15 +1,16 @@
 package com.BI.dto.ResponseDto;
 
 
-public class CalculateExpensesResponse {
+public class CashResponseDto {
     private int userId;
     private Double totalExpenses;
 
-    public CalculateExpensesResponse() {}
-    public CalculateExpensesResponse(int userId, Double totalExpenses) {
+    public CashResponseDto(int userId, Double totalExpenses) {
         this.userId = userId;
         this.totalExpenses = totalExpenses;
     }
+
+    public CashResponseDto() {}
 
     public int getUserId() {
         return userId;

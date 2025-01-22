@@ -1,11 +1,9 @@
 package com.BI.service.Impl;
 
 
-import com.BI.Exceptions.InvalidRequestException;
 import com.BI.Exceptions.UserNotFoundException;
-import com.BI.dto.ResponseDto.CalculateExpensesResponse;
 import com.BI.dto.ResponseDto.Transactions;
-import com.BI.service.TransactionService;
+import com.BI.service.ITransactionService;
 import com.github.javafaker.Faker;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class TransactionServiceImpl implements TransactionService {
+public class TransactionServiceImpl implements ITransactionService {
 
     //simular usuarios
 
@@ -34,7 +32,7 @@ public class TransactionServiceImpl implements TransactionService {
         //validar que el usuario exista
 
         if(!userExist(userId)){
-            throw  new UserNotFoundException("Usuario no encontrado" + userId + "no existe");
+            throw  new UserNotFoundException("Usuario no encontrado");
         }
         String type = faker.options().option("income", "expenses");
         double amount = faker.number().randomDouble(2, 50, 5000);
@@ -45,7 +43,7 @@ public class TransactionServiceImpl implements TransactionService {
         return new Transactions(userId, faker.number().numberBetween(1, 3), title, category, date, type, amount);
     }
 
-    public List<Transactions> getExpenses(int userId) {
+    public List<Transactions> getTransactions(int userId) {
         List<Transactions> transactionsUser = new ArrayList<>();
 
         for (int i = 0; i < 20; i++) {
@@ -56,42 +54,6 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
 
-
-    //metodo para sumar los gastos totales
-    //se crea una lista de la clase transacciones
-    //se usa la clase filter para crea una lista con los que cumples con la conficion
-    // que el tipo se igual a expenses
-    // se convierte el la transaccion en una suma del atributo amount
-    @Override
-    public CalculateExpensesResponse calculateTotalExpenses(Integer id) {
-
-        if(id == null){
-            throw new InvalidRequestException("el id no puede estar vacio");
-        }
-
-        List<Transactions> transactionsUser = getExpenses(id);
-       Double totalExpenses = transactionsUser.stream()
-               .filter(transaction -> "expenses".equals(transaction.getType()))
-               .mapToDouble(Transactions::getAmount)
-               .sum();
-
-        return  new CalculateExpensesResponse(id,totalExpenses);
-    }
-
-    @Override
-    public CalculateExpensesResponse calculateTotalIncome(Integer id) {
-
-        if(id == null){
-            throw new InvalidRequestException("el id no puede estar vacio");
-        }
-        List<Transactions> transactionsUser = getExpenses(id);
-        Double totalIncome = transactionsUser.stream()
-                .filter(transactions -> "income".equals(transactions.getType()))
-                .mapToDouble(Transactions::getAmount)
-                .sum();
-
-        return new CalculateExpensesResponse(id,totalIncome);
-    }
 
 
 }

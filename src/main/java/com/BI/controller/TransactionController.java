@@ -1,9 +1,9 @@
 package com.BI.controller;
-
-
-import com.BI.dto.ResponseDto.CalculateExpensesResponse;
 import com.BI.dto.ResponseDto.Transactions;
-import com.BI.service.TransactionService;
+import com.BI.service.ITransactionService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,11 +17,26 @@ import java.util.List;
 @RequestMapping("/api/financiera")
 public class TransactionController {
 
-    private final TransactionService transactionService;
+    private final ITransactionService transactionService;
 
-
-    public TransactionController(TransactionService transactionService) {
+    public TransactionController(ITransactionService transactionService) {
         this.transactionService = transactionService;
+    }
+
+    @Operation( summary = "Obtner Ingresos o gastos de  un usuario",
+            description = "Obitiene ingresos o gastos de un usuario, con los datos de cada entrada")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Expenses successfully retrieved"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    }
+    )
+
+    @GetMapping("/transacciones/{id}")
+    public ResponseEntity<List<Transactions>> transactions(@PathVariable int id){
+
+        List<Transactions> transactionsUser = this.transactionService.getTransactions(id);
+        return ResponseEntity.status(HttpStatus.OK).body(transactionsUser);
+
     }
 
 
