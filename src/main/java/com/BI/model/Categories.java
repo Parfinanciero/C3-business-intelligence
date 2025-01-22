@@ -3,6 +3,8 @@ package com.BI.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +23,7 @@ public class Categories {
 
     private String description;
 
-    @OneToOne(mappedBy = "categories")
-    private CashFlow cashFlow;
+    @OneToMany(mappedBy = "categories")
+    private List<CashFlow> cashFlows;
 
 }

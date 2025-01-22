@@ -30,8 +30,8 @@ public class CashFlow {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name = "category_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
     private Categories categories;
 
 }
