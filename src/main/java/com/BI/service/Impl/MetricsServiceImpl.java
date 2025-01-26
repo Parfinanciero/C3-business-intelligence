@@ -4,21 +4,30 @@ import com.BI.dto.ResponseDto.BalanceSheetDto;
 import com.github.javafaker.Faker;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
+
 @Service
 public class MetricsServiceImpl {
 
-    public BalanceSheetDto balanceSheet(int id){
+    private final Faker faker = new Faker();
 
-        double totalIncome = 0;
-        double totalExpense =0;
+    public BalanceSheetDto balanceSheet(long id){
 
-        Faker faker = new Faker();
+        double totalIncome =Math.abs(faker.number().randomDouble(0, 1000, 10000));
+        double totalExpense = faker.number().randomDouble(0, 1000, 10000);
 
-        totalIncome = faker.number().randomDouble(2,1000,5000);
-        totalExpense = faker.number().randomDouble(2,500,4000);
+        double balanceSheet =  totalIncome - totalExpense;
 
-        double balanceSheet = totalIncome - totalExpense;
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(new Locale("es", "CO"));
+        formatter.setMaximumFractionDigits(0);
 
-        return new BalanceSheetDto(balanceSheet,totalExpense,totalIncome);
+        return new BalanceSheetDto(
+                formatter.format(totalIncome),
+                formatter.format(totalExpense),
+                formatter.format(balanceSheet)
+        );
     }
 }

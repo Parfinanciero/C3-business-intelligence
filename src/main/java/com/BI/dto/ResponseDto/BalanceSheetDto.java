@@ -3,37 +3,38 @@ package com.BI.dto.ResponseDto;
 
 public class BalanceSheetDto {
 
-    private Double income;
-    private Double expense;
-    private Double balanceSheet;
+    private String income;
+    private String expense;
+    private String balanceSheet;
 
-    public BalanceSheetDto(Double income, Double expense, Double balanceSheet) {
+    public BalanceSheetDto(String income, String expense, String balanceSheet) {
         this.income = income;
         this.expense = expense;
         this.balanceSheet = balanceSheet;
     }
 
-    public Double getIncome() {
+
+    public String getIncome() {
         return income;
     }
 
-    public void setIncome(Double income) {
+    public void setIncome(String income) {
         this.income = income;
     }
 
-    public Double getExpense() {
+    public String getExpense() {
         return expense;
     }
 
-    public void setExpense(Double expense) {
+    public void setExpense(String expense) {
         this.expense = expense;
     }
 
-    public Double getBalanceSheet() {
+    public String getBalanceSheet() {
         return balanceSheet;
     }
 
-    public void setBalanceSheet(Double balanceSheet) {
+    public void setBalanceSheet(String balanceSheet) {
         this.balanceSheet = balanceSheet;
     }
 }
