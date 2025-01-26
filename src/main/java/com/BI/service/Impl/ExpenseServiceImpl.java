@@ -27,19 +27,19 @@ public class ExpenseServiceImpl  implements IExpensesService {
     // que el tipo se igual a expenses
     // se convierte el la transaccion en una suma del atributo amount
     @Override
-    public CashResponseDto calculateTotalExpenses(Integer id) {
+    public CashResponseDto calculateTotalExpenses(Integer id,String month) {
 
         if(id == null){
             throw new InvalidRequestException("el id no puede estar vacio");
         }
 
-        List<Transactions> transactionsUser = this.transactionService.getTransactions(id);
+        List<Transactions> transactionsUser = this.transactionService.getTransactionByUserAndMonth(id, month);
         Double totalExpenses = transactionsUser.stream()
                 .filter(transaction -> "expenses".equals(transaction.getType()))
                 .mapToDouble(Transactions::getAmount)
                 .sum();
 
-        return  new CashResponseDto(id,totalExpenses);
+        return  new CashResponseDto(id,totalExpenses,month);
     }
 
 }

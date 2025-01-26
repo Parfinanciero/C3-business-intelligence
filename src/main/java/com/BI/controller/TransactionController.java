@@ -31,10 +31,10 @@ public class TransactionController {
     }
     )
 
-    @GetMapping("/transacciones/{id}")
-    public ResponseEntity<List<Transactions>> transactions(@PathVariable int id){
+    @GetMapping("/transacciones/{id}/{month}")
+    public ResponseEntity<List<Transactions>> transactions(@PathVariable int id, @PathVariable String month){
 
-        List<Transactions> transactionsUser = this.transactionService.getTransactions(id);
+        List<Transactions> transactionsUser = this.transactionService.getTransactionByUserAndMonth(id, month);
         return ResponseEntity.status(HttpStatus.OK).body(transactionsUser);
 
     }

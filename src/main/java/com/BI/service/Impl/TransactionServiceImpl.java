@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TransactionServiceImpl implements ITransactionService {
@@ -53,7 +54,18 @@ public class TransactionServiceImpl implements ITransactionService {
         return transactionsUser;
     }
 
+    public List<Transactions> getTransactionByUserAndMonth(int userId, String month) {
+        // Primero genera las transacciones para el usuario
+        List<Transactions> transactionsUser = getTransactions(userId);
 
+        // Luego filtra por mes
+        return transactionsUser.stream()
+                .filter(transaction -> {
+                    String transactionMonth = transaction.getDate().substring(5, 7);
+                    return transactionMonth.equals(month);
+                })
+                .collect(Collectors.toList());
+    }
 
 
 }

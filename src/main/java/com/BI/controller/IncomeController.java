@@ -35,9 +35,9 @@ public class IncomeController {
     }
     )
 
-    @GetMapping("/ingresos/{id}")
-    public ResponseEntity<CashResponseDto> getIncome(@PathVariable  int id){
-        CashResponseDto allAmount = this.incomeService.calculateTotalIncome(id);
+    @GetMapping("/ingresos/{id}/{month}")
+    public ResponseEntity<CashResponseDto> getIncome(@PathVariable  int id, @PathVariable String month){
+        CashResponseDto allAmount = this.incomeService.calculateTotalIncome(id,month);
         return  ResponseEntity.status(HttpStatus.OK).body(allAmount);
     }
 

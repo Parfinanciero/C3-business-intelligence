@@ -31,9 +31,9 @@ public class ExpensesController {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     }
     )
-    @GetMapping("/gastos/{id}")
-    public ResponseEntity<CashResponseDto> getTotalExpenses(@PathVariable int id){
-        CashResponseDto allAmount = this.expensesService.calculateTotalExpenses(id);
+    @GetMapping("/gastos/{id}/{month}")
+    public ResponseEntity<CashResponseDto> getTotalExpenses(@PathVariable int id , @PathVariable String month){
+        CashResponseDto allAmount = this.expensesService.calculateTotalExpenses(id,month);
         return  ResponseEntity.status(HttpStatus.OK).body(allAmount);
     }
 

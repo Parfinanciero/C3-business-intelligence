@@ -21,18 +21,18 @@ public class IncomeServiceImpl implements IncomeService {
     }
 
     @Override
-    public CashResponseDto calculateTotalIncome(Integer id) {
+    public CashResponseDto calculateTotalIncome(Integer id, String month) {
 
         if(id == null){
             throw new InvalidRequestException("el id no puede estar vacio");
         }
-        List<Transactions> transactionsUser = transactionService.getTransactions(id);
+        List<Transactions> transactionsUser = transactionService.getTransactionByUserAndMonth(id,month);
         Double totalIncome = transactionsUser.stream()
                 .filter(transactions -> "income".equals(transactions.getType()))
                 .mapToDouble(Transactions::getAmount)
                 .sum();
 
-        return new CashResponseDto(id,totalIncome);
+        return new CashResponseDto(id,totalIncome,month);
     }
 
 }
