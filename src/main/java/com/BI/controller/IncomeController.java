@@ -1,6 +1,7 @@
 package com.BI.controller;
 
 import com.BI.dto.ResponseDto.CashResponseDto;
+import com.BI.dto.ResponseDto.GetTransactionResponse;
 import com.BI.service.IncomeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequestMapping("/api/finanzas")
@@ -41,6 +43,12 @@ public class IncomeController {
         return  ResponseEntity.status(HttpStatus.OK).body(allAmount);
     }
 
+    @GetMapping("/total/{id}/{month}/ingresos")
+    public Mono<ResponseEntity<GetTransactionResponse>> totalIncomeExternalApi(@PathVariable Long id, @PathVariable String month){
+        return this.incomeService.calculateTotalIncomeApi(id,month)
+                .map(ResponseEntity::ok)
+                .defaultIfEmpty(ResponseEntity.notFound().build());
+    }
 
 
 }

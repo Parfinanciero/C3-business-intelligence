@@ -32,4 +32,25 @@ public class GlobalHandlerExceptions {
                 "USER_NOT_FOUND");
         return  new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
     }
+
+    @ExceptionHandler(CashApiExceptions.class)
+    public ResponseEntity<ErrorResponse> handleExpensesApiException(CashApiExceptions ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                ex.getMessage(),
+               HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                ("ERROR_API_EXPENSES")
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+    @ExceptionHandler(NoCashFoundException.class)
+    public ResponseEntity<ErrorResponse> handleExpensesApiException(NoCashFoundException ex) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                ex.getMessage(),
+                HttpStatus.NOT_FOUND.value(),
+                ("ERROR_API_EXPENSES")
+        );
+        return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+    }
 }

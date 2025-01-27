@@ -1,8 +1,8 @@
-#Configuracion de puerto
+#Server configuration
 server:
   port: ${PORT}
-#Concifuracion de la base de datos
-#Variables de entorno
+
+#Database configuration
 spring:
   datasource:
     url: ${URL}
@@ -18,30 +18,42 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
 
-  #Configuracion Springdoc
-  #Swagger
+  #WebClient configuration
+  webflux:
+    client:
+      max-in-memory-size: 16MB
+    codec:
+      max-in-memory-size: 16MB
+
+#Springdoc configuration
 springdoc:
   api-docs:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
 
-# Configuracion de logger
-# Para desarrollo
+#Logger configuration
 logging:
   level:
     root: info
     org:
       springframework: debug
+    # Add WebClient specific logging
+    org.springframework.web.reactive.function.client.WebClient: DEBUG
   file:
     name: logs/application.log
+    max-size: 10MB
+    max-history: 7
 
-
-  # Configuración de  APIs externas
-#external:
-#    api1:
-#      url: https://api1.dev.com
-#      key: dev-api-key-1
-#    api2:
-#      url: https://api2.dev.com
-#      key: dev-api-key-2
+#External APIs configuration
+external-apis:
+  api1:
+    base-url: http://localhost:8086/api/v1/user
+    connection-timeout: 5000
+    read-timeout: 5000
+    write-timeout: 5000
+    retry:
+      max-attempts: 3
+      initial-interval: 1000
+      multiplier: 2.0
+      max-interval: 10000
