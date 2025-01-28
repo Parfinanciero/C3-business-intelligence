@@ -48,6 +48,7 @@ public class ExpenseServiceImpl  implements IExpensesService {
                 .sum();
 
         return  new CashResponseDto(id,totalExpenses,month);
+
     }
 
     @Override
@@ -64,6 +65,8 @@ public class ExpenseServiceImpl  implements IExpensesService {
                 .map(total-> new GetTransactionResponse(total,id,month))// devolveremos un Dto con las respuesta
                 .onErrorMap(e -> new CashApiExceptions("Error al calcular los gastos")); // creamos una clase de excepcion personalizada para devolver en json no tan largo
 
+
+ dev
     }
 
 }
