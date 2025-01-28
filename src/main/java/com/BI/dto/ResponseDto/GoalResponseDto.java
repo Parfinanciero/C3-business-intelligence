@@ -11,7 +11,7 @@ public class GoalResponseDto {
     private Double currentAmount;
     private Double goalAmount;
     private Status status;
-    private List<SuggestionsDto> suggetionsUSer;
+    private List<SuggestionsDto> suggestionsUSer;
 public GoalResponseDto() {}
     public GoalResponseDto(String userId, String title, Double currentAmount, Double goalAmount, Status status, List<SuggestionsDto> suggetionsUSer) {
         this.userId = userId;
@@ -19,15 +19,15 @@ public GoalResponseDto() {}
         this.currentAmount = currentAmount;
         this.goalAmount = goalAmount;
         this.status = status;
-        this.suggetionsUSer = suggetionsUSer;
+        this.suggestionsUSer = suggetionsUSer;
     }
 
-    public List<SuggestionsDto> getSuggetionsUSer() {
-        return suggetionsUSer;
+    public List<SuggestionsDto> getSuggestionsUSer() {
+        return suggestionsUSer;
     }
 
-    public void setSuggetionsUSer(List<SuggestionsDto> suggetionsUSer) {
-        this.suggetionsUSer = suggetionsUSer;
+    public void setSuggestionsUSer(List<SuggestionsDto> suggestionsUSer) {
+        this.suggestionsUSer = suggestionsUSer;
     }
 
     public String getUserId() {

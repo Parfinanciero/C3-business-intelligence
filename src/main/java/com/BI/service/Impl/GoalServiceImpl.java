@@ -27,7 +27,7 @@ public class GoalServiceImpl implements IGoalsService {
     public GoalResponseDto evaluateAndUpdateGoal(GoalResponseDto goal) {
         if (Math.abs(goal.getCurrentAmount() - goal.getGoalAmount()) < 0.01) {
             goal.setStatus(Status.COMPLETED);
-            goal.getSuggetionsUSer().add(new SuggestionsDto("Felicitaciones has alcanzado la meta"));
+            goal.getSuggestionsUSer().add(new SuggestionsDto("Felicitaciones has alcanzado la meta"));
         } else {
             goal.setStatus(Status.IN_PROGRESS);
             generateSuggestions(goal);
@@ -71,7 +71,7 @@ public class GoalServiceImpl implements IGoalsService {
         goalResponseDto.setCurrentAmount(currentValue);
         goalResponseDto.setGoalAmount(targetValue);
         goalResponseDto.setStatus(Status.CREATED);
-        goalResponseDto.setSuggetionsUSer(new ArrayList<>());
+        goalResponseDto.setSuggestionsUSer(new ArrayList<>());
 
         return goalResponseDto;
     }
@@ -123,6 +123,6 @@ public class GoalServiceImpl implements IGoalsService {
                         "¡Estás muy cerca! Solo te falta un pequeño esfuerzo final."));
             }
 
-            goal.setSuggetionsUSer(suggestions);
+            goal.setSuggestionsUSer(suggestions);
         }
 }
