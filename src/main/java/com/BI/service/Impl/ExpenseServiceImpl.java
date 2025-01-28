@@ -1,7 +1,7 @@
 package com.BI.service.Impl;
 
-import com.BI.Exceptions.CashApiExceptions;
-import com.BI.Exceptions.InvalidRequestException;
+import com.BI.Exceptions.Custom.CashApiExceptions;
+import com.BI.Exceptions.Custom.InvalidRequestException;
 import com.BI.dto.ResponseDto.CashResponseDto;
 import com.BI.dto.ResponseDto.GetTransactionResponse;
 import com.BI.dto.ResponseDto.GetCashResponse;

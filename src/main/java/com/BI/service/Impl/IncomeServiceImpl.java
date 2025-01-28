@@ -1,8 +1,7 @@
 package com.BI.service.Impl;
 
-import com.BI.Exceptions.CashApiExceptions;
-import com.BI.Exceptions.InvalidRequestException;
-import com.BI.Exceptions.NoCashFoundException;
+import com.BI.Exceptions.Custom.CashApiExceptions;
+import com.BI.Exceptions.Custom.InvalidRequestException;
 import com.BI.dto.ResponseDto.CashResponseDto;
 import com.BI.dto.ResponseDto.GetCashResponse;
 import com.BI.dto.ResponseDto.GetTransactionResponse;
@@ -10,7 +9,6 @@ import com.BI.dto.ResponseDto.Transactions;
 import com.BI.service.IncomeService;
 import com.BI.service.ITransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;

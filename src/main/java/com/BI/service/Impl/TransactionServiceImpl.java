@@ -1,7 +1,7 @@
 package com.BI.service.Impl;
 
 
-import com.BI.Exceptions.UserNotFoundException;
+import com.BI.Exceptions.Custom.UserNotFoundException;
 import com.BI.dto.ResponseDto.Transactions;
 import com.BI.service.ITransactionService;
 import com.github.javafaker.Faker;
