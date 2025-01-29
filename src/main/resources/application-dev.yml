@@ -1,13 +1,13 @@
 #Server configuration
 server:
-  port: ${PORT:8085}
+  port: 8081
 
 #Database configuration
 spring:
   datasource:
-    url: ${URL}
-    username: ${USER_NAME}
-    password: ${PASSWORD}
+    url: dbc:mysql://beajzoq1yzlj5drogqzl-mysql.services.clever-cloud.com/beajzoq1yzlj5drogqzl
+    username: ucet1kqkhzpz25to
+    password: Ktsk8XnHeoVkYA0ZI5aM
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:

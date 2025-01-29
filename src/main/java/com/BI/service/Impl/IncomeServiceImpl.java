@@ -59,7 +59,7 @@ public class IncomeServiceImpl implements IncomeService {
                 .map(GetCashResponse::getAmount)
                 .filter(Objects::nonNull)
                 .reduce(Double::sum)
-                .map(total-> new GetTransactionResponse(total,id,month))
+                .map(total-> new GetTransactionResponse(total,id,month));
 
     }
 
