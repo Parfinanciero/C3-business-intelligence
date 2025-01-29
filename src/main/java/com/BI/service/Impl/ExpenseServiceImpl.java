@@ -2,10 +2,7 @@ package com.BI.service.Impl;
 
 import com.BI.Exceptions.Custom.CashApiExceptions;
 import com.BI.Exceptions.Custom.InvalidRequestException;
-import com.BI.dto.ResponseDto.CashResponseDto;
-import com.BI.dto.ResponseDto.GetTransactionResponse;
-import com.BI.dto.ResponseDto.GetCashResponse;
-import com.BI.dto.ResponseDto.Transactions;
+import com.BI.dto.ResponseDto.*;
 import com.BI.service.IExpensesService;
 import com.BI.service.ITransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpenseServiceImpl  implements IExpensesService {
@@ -50,6 +50,8 @@ public class ExpenseServiceImpl  implements IExpensesService {
         return  new CashResponseDto(id,totalExpenses,month);
 
     }
+
+
 
     @Override
     public Mono<GetTransactionResponse> calculateTotalExpensesApi(Long id, String month) {

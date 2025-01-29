@@ -4,20 +4,24 @@ import com.BI.Exceptions.Custom.CustomArithmeticExceptions;
 import com.BI.Exceptions.Custom.InvalidRequestException;
 import com.BI.Exceptions.Custom.NoIncomeException;
 import com.BI.Utils.FinancialStatus;
-import com.BI.dto.ResponseDto.BalanceSheetDto;
-import com.BI.dto.ResponseDto.CashResponseDto;
-import com.BI.dto.ResponseDto.MetricResponseDto;
+import com.BI.dto.ResponseDto.*;
 import com.BI.service.IExpensesService;
 import com.BI.service.IMetricService;
+import com.BI.service.ITransactionService;
 import com.BI.service.IncomeService;
 import com.github.javafaker.Faker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class MetricsServiceImpl implements IMetricService {
@@ -25,11 +29,14 @@ public class MetricsServiceImpl implements IMetricService {
     private final Faker faker = new Faker();
     private final IncomeService incomeService;
     private final IExpensesService expensesService;
+    private final ITransactionService transactionService;
+    private final Logger logger = LoggerFactory.getLogger(MetricsServiceImpl.class);
 
     @Autowired
-    public  MetricsServiceImpl (IncomeService incomeService, IExpensesService expensesService){
+    public  MetricsServiceImpl (IncomeService incomeService, IExpensesService expensesService, ITransactionService transactionService){
         this.incomeService = incomeService;
         this.expensesService = expensesService;
+        this.transactionService = transactionService;
     }
 
     @Override
@@ -91,5 +98,49 @@ public class MetricsServiceImpl implements IMetricService {
                 formatter.format(totalExpense),
                 formatter.format(balanceSheet)
         );
+    }
+
+    @Override
+    public List<CashByCategoryResponse> calculateExpensesByCategory(Integer id, String month) {
+        logger.info("Iniciando cálculo de gastos por categoría - id: {}, mes: {}", id, month);
+
+        if(id == null || month == null || month.isEmpty()){
+            logger.error("ID o mes inválidos - id: {}, mes: {}", id, month);
+            throw new InvalidRequestException("el id y mes no pueden estar vacíos");
+        }
+
+        CashResponseDto totalExpensesResponse = this.expensesService.calculateTotalExpenses(id, month);
+        Double totalExpenses = totalExpensesResponse.getTotalExpenses();
+        logger.debug("Total de gastos calculado: {}", totalExpenses);
+
+        if (totalExpenses == 0) {
+            logger.info("No se encontraron gastos para el período");
+            return Collections.emptyList();
+        }
+
+        List<Transactions> transactionsUser = this.transactionService.getTransactionByUserAndMonth(id, month);
+        logger.debug("Transacciones encontradas: {}", transactionsUser.size());
+
+        List<Transactions> expenses = transactionsUser.stream()
+                .filter(transaction -> "expenses".equals(transaction.getType()))
+                .toList();
+        logger.debug("Número de gastos filtrados: {}", expenses.size());
+
+        var result = expenses.stream()
+                .collect(Collectors.groupingBy(
+                        Transactions::getCategory,
+                        Collectors.summingDouble(Transactions::getAmount)
+                )).entrySet().stream()
+                .map(entry -> {
+                    logger.debug("Procesando categoría: {}, monto: {}, porcentaje: {}",
+                            entry.getKey(),
+                            entry.getValue(),
+                            (entry.getValue() / totalExpenses) * 100);
+                    return new CashByCategoryResponse(entry.getKey(), (entry.getValue() / totalExpenses) * 100);
+                })
+                .toList();
+
+        logger.info("Cálculo completado. Categorías procesadas: {}", result.size());
+        return result;
     }
 }

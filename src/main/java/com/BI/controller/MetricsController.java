@@ -1,9 +1,13 @@
 package com.BI.controller;
 
+import com.BI.Exceptions.ResponseDto.ErrorResponse;
+import com.BI.dto.ResponseDto.CashByCategoryResponse;
 import com.BI.dto.ResponseDto.MetricResponseDto;
 import com.BI.service.IMetricService;
 import com.BI.service.Impl.MetricsServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,6 +19,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/finanzas/metricas")
@@ -61,8 +67,19 @@ public class MetricsController {
             }
     )
     @GetMapping("/balance/{id}/{month}")
-    public  ResponseEntity<MetricResponseDto> metricIncomeVsExpenses(Integer id, String month){
+    public  ResponseEntity<MetricResponseDto> metricIncomeVsExpenses(
+            @PathVariable Integer id,
+            @PathVariable String month){
         MetricResponseDto metricUser = this.metricService.calculateIncomeAndExpenseRatio(id,month);
         return  ResponseEntity.status(HttpStatus.OK).body(metricUser);
+    }
+
+
+    @GetMapping("/balance/{id}/{month}/gastos")
+    public ResponseEntity<List<CashByCategoryResponse>> ExpensesCategory(
+            @PathVariable Integer id ,
+            @PathVariable String month){
+        List<CashByCategoryResponse> categoryExpenses = this.metricService.calculateExpensesByCategory(id,month);
+       return ResponseEntity.status(HttpStatus.OK).body(categoryExpenses);
     }
 }

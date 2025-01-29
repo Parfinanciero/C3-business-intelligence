@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,11 +25,19 @@ public class TransactionServiceImpl implements ITransactionService {
         return validUser.contains(userId);
     }
 
-    private final Faker faker = new Faker();
+    private final Faker faker = new Faker(new Locale("es"));
 
 
     //metodo para crear datos de ingresos y gastos de un usuario
     private Transactions createTransaction(int userId) {
+
+        List<String> expensesCategory = Arrays.asList( "Transporte", "Salud",
+                "Vivienda", "Viaje", "Entretenimiento",
+                "Educación");
+
+        List<String> incomeCategory = Arrays.asList("Salario", "Freelance", "Inversión", "Venta de casa", "Regalo", "Otros");
+
+
 
         //validar que el usuario exista
 
@@ -37,8 +46,10 @@ public class TransactionServiceImpl implements ITransactionService {
         }
         String type = faker.options().option("income", "expenses");
         double amount = faker.number().randomDouble(2, 50, 5000);
+
         String title = type.equals("income") ? faker.company().profession() : faker.commerce().productName();
-        String category = type.equals("income") ? "Work" : faker.commerce().department();
+        String category = type.equals("income") ? faker.options().option(incomeCategory.toArray(new String[0]))
+                : faker.options().option(expensesCategory.toArray(new String[0]));
         String date = new SimpleDateFormat("yyyy-MM-dd").format(faker.date().past(365, java.util.concurrent.TimeUnit.DAYS));
 
         return new Transactions(userId, faker.number().numberBetween(1, 3), title, category, date, type, amount);
