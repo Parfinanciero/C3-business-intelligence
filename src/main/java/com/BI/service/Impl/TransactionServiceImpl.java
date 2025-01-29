@@ -8,10 +8,9 @@ import com.github.javafaker.Faker;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,28 +28,32 @@ public class TransactionServiceImpl implements ITransactionService {
 
 
     //metodo para crear datos de ingresos y gastos de un usuario
-    private Transactions createTransaction(int userId) {
-
-        List<String> expensesCategory = Arrays.asList( "Transporte", "Salud",
+    private Transactions createTransaction(int userId, String forcedType) {
+        List<String> expensesCategory = Arrays.asList("Transporte", "Salud",
                 "Vivienda", "Viaje", "Entretenimiento",
                 "Educación");
 
         List<String> incomeCategory = Arrays.asList("Salario", "Freelance", "Inversión", "Venta de casa", "Regalo", "Otros");
 
-
-
-        //validar que el usuario exista
-
-        if(!userExist(userId)){
-            throw  new UserNotFoundException("Usuario no encontrado");
+        if(!userExist(userId)) {
+            throw new UserNotFoundException("Usuario no encontrado");
         }
-        String type = faker.options().option("income", "expenses");
+
+        String type = forcedType != null ? forcedType : faker.options().option("income", "expenses");
         double amount = faker.number().randomDouble(2, 50, 5000);
 
         String title = type.equals("income") ? faker.company().profession() : faker.commerce().productName();
         String category = type.equals("income") ? faker.options().option(incomeCategory.toArray(new String[0]))
                 : faker.options().option(expensesCategory.toArray(new String[0]));
-        String date = new SimpleDateFormat("yyyy-MM-dd").format(faker.date().past(365, java.util.concurrent.TimeUnit.DAYS));
+
+        // Generar fecha del año actual
+        LocalDate startDate = LocalDate.of(2024, 12, 1);
+        LocalDate endDate = LocalDate.now();
+        Date dateInRange = faker.date().between(
+                Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
+                Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
+        );
+        String date = new SimpleDateFormat("yyyy-MM-dd").format(dateInRange);
 
         return new Transactions(userId, faker.number().numberBetween(1, 3), title, category, date, type, amount);
     }
@@ -58,13 +61,15 @@ public class TransactionServiceImpl implements ITransactionService {
     public List<Transactions> getTransactions(int userId) {
         List<Transactions> transactionsUser = new ArrayList<>();
 
-        for (int i = 0; i < 20; i++) {
-            transactionsUser.add(createTransaction(userId));
+        transactionsUser.add(createTransaction(userId, "income"));
+        transactionsUser.add(createTransaction(userId, "expenses"));
+
+        for (int i = 0; i < 18; i++) {
+            transactionsUser.add(createTransaction(userId, null));
         }
 
         return transactionsUser;
     }
-
     public List<Transactions> getTransactionByUserAndMonth(int userId, String month) {
         // Primero genera las transacciones para el usuario
         List<Transactions> transactionsUser = getTransactions(userId);
