@@ -107,42 +107,5 @@ public class IncomeController {
     }
 
 
-    @Operation(
-            summary = "Obtiene el total de ingresos",
-            description = "Este método realiza una petición a la API de ingresos y gastos, " +
-                    "suma los valores de ingresos  de un usuario y devuelve el resultado " +
-                    "como un balance financiero.",
-            responses = {
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "Cálculo exitoso de la suma de ingresos y gastos",
-                            content = @Content(mediaType = "application/json",
-                                    schema = @Schema(implementation = GetTransactionResponse.class)
-                            )
-                    ),
-                    @ApiResponse(
-                            responseCode = "400",
-                            description = "Solicitud incorrecta, posiblemente debido a valores de ingresos o gastos nulos",
-                            content = @Content(mediaType = "application/json")
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "No se encontraron datos de ingresos o gastos para el usuario solicitado",
-                            content = @Content(mediaType = "application/json")
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Error interno del servidor al procesar la solicitud",
-                            content = @Content(mediaType = "application/json")
-                    )
-            }
-    )
-    @GetMapping("/total/{id}/{month}/ingresos")
-    public Mono<ResponseEntity<GetTransactionResponse>> totalIncomeExternalApi(@PathVariable Long id, @PathVariable String month){
-        return this.incomeService.calculateTotalIncomeApi(id,month)
-                .map(ResponseEntity::ok)
-                .defaultIfEmpty(ResponseEntity.notFound().build());
-    }
-
 
 }
