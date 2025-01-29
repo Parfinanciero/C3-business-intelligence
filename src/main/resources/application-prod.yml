@@ -8,14 +8,14 @@ spring:
 # Configuración de las APIs externas
 external:
   api1:
-    url: https://api1.prod.com
+    url: https://localhots:8086
     key: prod-api-key-1
-  api2:
-    url: https://api2.prod.com
-    key: prod-api-key-2
-  api3:
-    url: https://api3.prod.com
-    key: prod-api-key-3
+#  api2:
+#    url: https://api2.prod.com
+#    key: prod-api-key-2
+#  api3:
+#    url: https://api3.prod.com
+#    key: prod-api-key-3
 
 # Configuración de logs para producción
 logging:
