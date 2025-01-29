@@ -1,6 +1,6 @@
 #Server configuration
 server:
-  port: ${PORT}
+  port: ${PORT:8085}
 
 #Database configuration
 spring:
