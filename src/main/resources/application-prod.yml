@@ -1,0 +1,35 @@
+server:
+  port: 8080 # Puerto estándar para producción
+
+spring:
+  profiles:
+    active: prod
+
+# Configuración de las APIs externas
+external:
+  api1:
+    url: https://localhots:8086
+    key: prod-api-key-1
+#  api2:
+#    url: https://api2.prod.com
+#    key: prod-api-key-2
+#  api3:
+#    url: https://api3.prod.com
+#    key: prod-api-key-3
+
+# Configuración de logs para producción
+logging:
+  level:
+    root: info
+    org.springframework.web: warn
+  file:
+    name: logs/application-prod.log
+
+## Seguridad
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: health, info # Solo expone ciertos endpoints
+#  security:
+#    enabled: true
