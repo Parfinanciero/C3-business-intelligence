@@ -1,8 +1,6 @@
 package com.BI.service.Impl;
 
-import com.BI.Exceptions.Custom.CustomArithmeticExceptions;
 import com.BI.Exceptions.Custom.InvalidRequestException;
-import com.BI.Exceptions.Custom.NoIncomeException;
 import com.BI.Utils.FinancialStatus;
 import com.BI.dto.ResponseDto.*;
 import com.BI.service.IExpensesService;
@@ -58,15 +56,6 @@ public class MetricsServiceImpl implements IMetricService {
         // esta validacion se hace para tener en cuenta que el ingreso puede ser cero
         // y en matematicas no se puede dividir por cero
         // para evitar ese error validamos para no dividir por cero
-       if(income.compareTo(BigDecimal.ZERO) == 0){
-       throw  new NoIncomeException("No se puede realizar el calculo porque no tiene ingresos.");
-       }
-
-       if(expense.compareTo(BigDecimal.ZERO) == 0){
-           throw  new CustomArithmeticExceptions("No se puede realizar el cálculo debido a la división por cero en los gastos.");
-
-       }
-
         BigDecimal proportion = income.divide(expense, 2, RoundingMode.HALF_UP);
 
 
