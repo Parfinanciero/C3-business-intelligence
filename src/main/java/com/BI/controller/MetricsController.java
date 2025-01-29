@@ -1,17 +1,12 @@
 package com.BI.controller;
 
-import com.BI.Exceptions.ResponseDto.ErrorResponse;
 import com.BI.dto.ResponseDto.CashByCategoryResponse;
 import com.BI.dto.ResponseDto.MetricResponseDto;
 import com.BI.service.IMetricService;
-import com.BI.service.Impl.MetricsServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -75,6 +70,30 @@ public class MetricsController {
     }
 
 
+    @Operation(
+            summary = "Calcula porcentaje  gastos por categoria",
+            description = "Este método calcula el balance  de gastos por categoria de un usuario, " +
+                    "y devuelve el estado financiero basado en la proporción.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Cálculo exitoso de la relación",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = MetricResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Solicitud incorrecta debido a  gasto cero",
+                            content = @Content(mediaType = "application/json")
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Error interno del servidor",
+                            content = @Content(mediaType = "application/json")
+                    )
+            }
+    )
     @GetMapping("/balance/{id}/{month}/gastos")
     public ResponseEntity<List<CashByCategoryResponse>> ExpensesCategory(
             @PathVariable Integer id ,

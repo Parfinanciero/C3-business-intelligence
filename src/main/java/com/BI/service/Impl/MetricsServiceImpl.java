@@ -109,38 +109,36 @@ public class MetricsServiceImpl implements IMetricService {
             throw new InvalidRequestException("el id y mes no pueden estar vacíos");
         }
 
-        CashResponseDto totalExpensesResponse = this.expensesService.calculateTotalExpenses(id, month);
-        Double totalExpenses = totalExpensesResponse.getTotalExpenses();
-        logger.debug("Total de gastos calculado: {}", totalExpenses);
+        List<Transactions> transactionsUser = this.transactionService.getTransactionByUserAndMonth(id, month);
+
+        List<Transactions> expenses = transactionsUser.stream()
+                .filter(transaction -> "expenses".equals(transaction.getType()))
+                .toList();
+
+        double totalExpenses = expenses.stream()
+                .mapToDouble(Transactions::getAmount)
+                .sum();
 
         if (totalExpenses == 0) {
             logger.info("No se encontraron gastos para el período");
             return Collections.emptyList();
         }
 
-        List<Transactions> transactionsUser = this.transactionService.getTransactionByUserAndMonth(id, month);
-        logger.debug("Transacciones encontradas: {}", transactionsUser.size());
-
-        List<Transactions> expenses = transactionsUser.stream()
-                .filter(transaction -> "expenses".equals(transaction.getType()))
-                .toList();
-        logger.debug("Número de gastos filtrados: {}", expenses.size());
-
-        var result = expenses.stream()
+        return expenses.stream()
                 .collect(Collectors.groupingBy(
                         Transactions::getCategory,
                         Collectors.summingDouble(Transactions::getAmount)
                 )).entrySet().stream()
                 .map(entry -> {
-                    logger.debug("Procesando categoría: {}, monto: {}, porcentaje: {}",
+                    double percentage = (entry.getValue() / totalExpenses) * 100;
+                    double roundedPercentage = Math.round(percentage * 100.0) / 100.0;
+                    logger.debug("Categoría: {}, Monto: {}, Total: {}, Porcentaje: {}",
                             entry.getKey(),
                             entry.getValue(),
-                            (entry.getValue() / totalExpenses) * 100);
-                    return new CashByCategoryResponse(entry.getKey(), (entry.getValue() / totalExpenses) * 100);
+                            totalExpenses,
+                            roundedPercentage);
+                    return new CashByCategoryResponse(entry.getKey(), roundedPercentage);
                 })
                 .toList();
-
-        logger.info("Cálculo completado. Categorías procesadas: {}", result.size());
-        return result;
     }
 }
