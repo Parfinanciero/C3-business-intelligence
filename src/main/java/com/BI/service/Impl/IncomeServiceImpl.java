@@ -42,6 +42,7 @@ public class IncomeServiceImpl implements IncomeService {
                 .sum();
 
         return new CashResponseDto(id,totalIncome,month);
+
     }
 
     @Override
@@ -58,8 +59,8 @@ public class IncomeServiceImpl implements IncomeService {
                 .map(GetCashResponse::getAmount)
                 .filter(Objects::nonNull)
                 .reduce(Double::sum)
-                .map(total-> new GetTransactionResponse(total,id,month))
-                .onErrorMap(error -> new CashApiExceptions("Error al recuperar datos"));
+                .map(total-> new GetTransactionResponse(total,id,month));
+
     }
 
 }

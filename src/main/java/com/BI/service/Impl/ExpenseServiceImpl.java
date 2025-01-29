@@ -48,6 +48,7 @@ public class ExpenseServiceImpl  implements IExpensesService {
                 .sum();
 
         return  new CashResponseDto(id,totalExpenses,month);
+
     }
 
     @Override
