@@ -6,8 +6,8 @@ import reactor.core.publisher.Mono;
 
 public interface IncomeService {
  CashResponseDto calculateTotalIncome (Integer id, String month );
- Mono<GetTransactionResponse> calculateTotalIncomeApi(Long id, String month);
 
+ Mono<GetTransactionResponse> calculateTotalIncomeApi(Long id, String month);
 
 
 }

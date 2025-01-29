@@ -6,5 +6,6 @@ import reactor.core.publisher.Mono;
 
 public interface IExpensesService {
     CashResponseDto calculateTotalExpenses(Integer id,String month);
+
     Mono<GetTransactionResponse> calculateTotalExpensesApi(Long id, String month);
 }
