@@ -19,8 +19,9 @@ jobs:
                   distribution: 'temurin'
 
             - name: Build JAR file with Maven
-              run: mvn clean package
-                   ls -l target/*.jar
+              run: |
+                  mvn clean package
+                  ls -l target/*.jar
         
             - name: Deploy to Server
               uses: appleboy/ssh-action@v1.2.0
