@@ -42,19 +42,18 @@ jobs:
       # 6. Desplegar la aplicación en la VPS
       - name: Deploy to VPS
         run: |
-          # Ajusta estas rutas según tu entorno
           DEPLOY_DIR="/home/admin_jb_3"
           LOGS_DIR="$DEPLOY_DIR/logs"
           APP_JAR="Bussiness-0.0.1-SNAPSHOT.jar"
 
           echo "Matando proceso anterior (si existe)..."
-          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "sudo pkill -f $APP_JAR || true"
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo pkill -f $APP_JAR || true"
 
           echo "Copiando el nuevo JAR..."
-          scp -P ${{ secrets.PORT }} target/*.jar ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }}:$DEPLOY_DIR/
+          scp -P ${{ secrets.PORT }} target/*.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$DEPLOY_DIR/
 
           echo "Iniciando la aplicación en segundo plano..."
-          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_HOST }} "\
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "\
             nohup java -jar $DEPLOY_DIR/$APP_JAR > $LOGS_DIR/output.log 2>&1 & \
           "
 
