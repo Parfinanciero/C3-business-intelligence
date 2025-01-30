@@ -32,22 +32,36 @@ public class ProspectiveServiceImpl implements IProspectiveService {
      * @param month Mes en formato "MM" para el cual se calcula la proyección.
      * @return Objeto ProspectiveResponseDto con detalles de ingresos, gastos y proyecciones.
      */
-    @Override
     public ProspectiveResponseDto getProspective(Integer userId, String month) {
-        List<Transactions> transactionsUser = this.transactionService.getTransactionByUserAndMonth(userId,month);
+        List<Transactions> transactionsUser = this.transactionService.getTransactionByUserAndMonth(userId, month);
 
-        double ingresos = calculateTotal(transactionsUser, "income");
-        double gastos = calculateTotal(transactionsUser, "expenses");
+        double ingresos = roundToTwoDecimals(calculateTotal(transactionsUser, "income"));
+        double gastos = roundToTwoDecimals(calculateTotal(transactionsUser, "expenses"));
 
-        double ahorroProyectado = ingresos - gastos;
-        double ratioIngresosGastos = ingresos / (gastos > 0 ? gastos : 1);
+        double ahorroProyectado = roundToTwoDecimals(ingresos - gastos);
+        double ratioIngresosGastos = roundToTwoDecimals(ingresos / (gastos > 0 ? gastos : 1));
 
-        double proyeccionIngresos = ingresos * 1.2;
-        double proyeccionGastos = gastos * 1.15;
+        double proyeccionIngresos = roundToTwoDecimals(ingresos * 1.2);
+        double proyeccionGastos = roundToTwoDecimals(gastos * 1.15);
+        double cumplimientoMeta = roundToTwoDecimals(calculateComplianceGoal());
 
-        return new ProspectiveResponseDto(month,ingresos,gastos,userId,proyeccionIngresos,proyeccionGastos,ahorroProyectado,ratioIngresosGastos,calculateComplianceGoal());
+        return new ProspectiveResponseDto(
+                month,
+                ingresos,
+                gastos,
+                userId,
+                proyeccionIngresos,
+                proyeccionGastos,
+                cumplimientoMeta,
+                ahorroProyectado,
+                ratioIngresosGastos
+        );
     }
-
+    private double roundToTwoDecimals(double value) {
+        return BigDecimal.valueOf(value)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
+    }
 
 
     /**
@@ -66,7 +80,6 @@ public class ProspectiveServiceImpl implements IProspectiveService {
                 .setScale(2, RoundingMode.HALF_UP)
                 .doubleValue();
     }
-
     private double calculateComplianceGoal() {
         return 90 + (Math.random() * 5);
     }
