@@ -70,7 +70,7 @@ public class IncomeController {
 
 
     @Operation(
-            summary = "Obtiene el total de ingresos",
+            summary = "Obtiene el total de ingresos haciendo peticion a api externa",
             description = "Este método realiza una petición a la API de ingresos y gastos, " +
                     "suma los valores de ingresos  de un usuario y devuelve el resultado " +
                     "como un balance financiero.",

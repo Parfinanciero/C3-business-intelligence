@@ -75,7 +75,7 @@ public class GlobalHandlerExceptions {
         ErrorResponse errorResponse = new ErrorResponse(
                 exceptions.getMessage(),
                 HttpStatus.BAD_REQUEST.value(),
-                ("ARITHMETIC_EXCEPTION")
+                ("INCOME_INVALID")
 
 
         );

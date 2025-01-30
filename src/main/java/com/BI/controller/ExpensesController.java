@@ -1,8 +1,11 @@
 package com.BI.controller;
 import com.BI.dto.ResponseDto.CashResponseDto;
 import com.BI.dto.ResponseDto.GetTransactionResponse;
+import com.BI.dto.ResponseDto.MetricResponseDto;
 import com.BI.service.IExpensesService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +29,7 @@ public class ExpensesController {
     }
 
     //metodo para obtener los gastos totales de un usuario por su id
-    @Operation( summary = "Obtner gastos totales",
+    @Operation( summary = "Obtner gastos totales (Faker)",
             description = "Aqui podras obtener los gastos totalaes de un usuario")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Expenses successfully retrieved"),
@@ -39,6 +42,31 @@ public class ExpensesController {
         return  ResponseEntity.status(HttpStatus.OK).body(allAmount);
     }
 
+
+    @Operation(
+            summary = "Calcula total de gastos apuntando a una api externa",
+            description = "Este método calcula total gastos por categoria de un usuario, " +
+                    "y devuelve el total.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Cálculo exitoso de la relación",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = MetricResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Solicitud incorrecta debido a  gasto cero",
+                            content = @Content(mediaType = "application/json")
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Error interno del servidor",
+                            content = @Content(mediaType = "application/json")
+                    )
+            }
+    )
     //total gastos desde api externa
     @GetMapping("/total/{id}/{month}/gastos")
     public Mono<ResponseEntity<GetTransactionResponse>> totalExpensesUserExternalApi(Long id, String month){
