@@ -9,56 +9,77 @@ import com.BI.service.IncomeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
 public class ProspectiveServiceImpl implements IProspectiveService {
 
     private final ITransactionService transactionService;
-    private final IncomeService incomeService;
-    private  final IExpensesService expensesService;
+
 
     @Autowired
     public ProspectiveServiceImpl(ITransactionService transactionService, IncomeService incomeService, IExpensesService expensesService) {
         this.transactionService = transactionService;
-        this.expensesService = expensesService;
-        this.incomeService = incomeService;
+
     }
-    @Override
+
+    /**
+     * Servicio para calcular la proyección financiera de un usuario en un mes específico.
+     *
+     * @param userId ID del usuario.
+     * @param month Mes en formato "MM" para el cual se calcula la proyección.
+     * @return Objeto ProspectiveResponseDto con detalles de ingresos, gastos y proyecciones.
+     */
     public ProspectiveResponseDto getProspective(Integer userId, String month) {
-        //obtener gastos e ingresos de un usuario
-        List<Transactions> transactionsUser = this.transactionService.getTransactionByUserAndMonth(userId,month);
+        List<Transactions> transactionsUser = this.transactionService.getTransactionByUserAndMonth(userId, month);
 
-        //filtrar ingresos y gastos
-        double ingresos = calculateTotal(transactionsUser, "income");
-        double gastos = calculateTotal(transactionsUser, "expenses");
+        double ingresos = roundToTwoDecimals(calculateTotal(transactionsUser, "income"));
+        double gastos = roundToTwoDecimals(calculateTotal(transactionsUser, "expenses"));
 
-        double ahorroProyectado = ingresos - gastos;
-        double ratioIngresosGastos = ingresos / (gastos > 0 ? gastos : 1);
+        double ahorroProyectado = roundToTwoDecimals(ingresos - gastos);
+        double ratioIngresosGastos = roundToTwoDecimals(ingresos / (gastos > 0 ? gastos : 1));
 
-        // Proyección de ingresos y gastos
-        double proyeccionIngresos = ingresos * 1.2;
-        double proyeccionGastos = gastos * 1.15;
+        double proyeccionIngresos = roundToTwoDecimals(ingresos * 1.2);
+        double proyeccionGastos = roundToTwoDecimals(gastos * 1.15);
+        double cumplimientoMeta = roundToTwoDecimals(calculateComplianceGoal());
 
-        return new ProspectiveResponseDto(month,ingresos,gastos,userId,proyeccionIngresos,proyeccionGastos,ahorroProyectado,ratioIngresosGastos,calculateComplianceGoal());
+        return new ProspectiveResponseDto(
+                month,
+                ingresos,
+                gastos,
+                userId,
+                proyeccionIngresos,
+                proyeccionGastos,
+                cumplimientoMeta,
+                ahorroProyectado,
+                ratioIngresosGastos
+        );
+    }
+    private double roundToTwoDecimals(double value) {
+        return BigDecimal.valueOf(value)
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
     }
 
-// metodo para validar id del usuario
-    private void validateUser(Integer userId) {
-        if (userId == null || userId <= 0) {
-            throw new IllegalArgumentException("ID de usuario inválido");
-        }
-        // Posible verificación adicional de existencia de usuario
-    }
 
-    // Método para calcular total por tipo
+    /**
+     * Calcula el total de ingresos o gastos según el tipo de transacción.
+     *
+     * @param transactions Lista de transacciones del usuario.
+     * @param type Tipo de transacción ("income" o "expenses").
+     * @return Total acumulado del tipo de transacción con dos decimales.
+     *
+     */
     private double calculateTotal(List<Transactions> transactions, String type) {
-        return transactions.stream()
-                .filter(t -> t.getType().equals(type))
-                .mapToDouble(Transactions::getAmount)
-                .sum();
+        return BigDecimal.valueOf(transactions.stream()
+                        .filter(t -> t.getType().equals(type))
+                        .mapToDouble(Transactions::getAmount)
+                        .sum())
+                .setScale(2, RoundingMode.HALF_UP)
+                .doubleValue();
     }
-//meta de cumplimiento
     private double calculateComplianceGoal() {
         return 90 + (Math.random() * 5);
     }
