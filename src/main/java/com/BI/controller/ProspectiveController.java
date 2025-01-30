@@ -24,14 +24,14 @@ public class ProspectiveController {
         this.prospectiveService = prospectiveService;
     }
 
-    @Operation( summary = "Obtner prospectivas de usuarios",
+    @Operation( summary = "Obtner prospectivas de usuarios(Faker)",
             description = "Aqui podras obtener las prospectivas de un usuario")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "prospective successfully retrieved"),
             @ApiResponse(responseCode = "500", description = "Internal server error")
     }
     )
-    @GetMapping("/prospective/{userId}/{month}")
+    @GetMapping("/prospectivas/{userId}/{month}")
     public ResponseEntity<ProspectiveResponseDto> getProspective(@PathVariable Integer userId, @PathVariable String month) {
         ProspectiveResponseDto prospectiveUser = this.prospectiveService.getProspective(userId,month);
         return ResponseEntity.status(HttpStatus.OK).body(prospectiveUser);

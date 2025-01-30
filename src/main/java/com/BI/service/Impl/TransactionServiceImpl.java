@@ -7,9 +7,12 @@ import com.BI.service.ITransactionService;
 import com.github.javafaker.Faker;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -17,92 +20,71 @@ import java.util.stream.Collectors;
 public class TransactionServiceImpl implements ITransactionService {
 
     //simular usuarios
+    private final Faker faker = new Faker(new Locale("es"));
+    private final List<Integer> validUser = Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-    List<Integer> validUser = Arrays.asList(1,2,3,4,5,6,7,8,9,10);
-
-    private boolean userExist(int userId){
+    private boolean userExist(int userId) {
         return validUser.contains(userId);
     }
+    /* Este metodo sirve para crear transacciones de un usuario con datos generados por
+     java faker
+     generamos array de cateorias para tomarlas como base
 
-    private final Faker faker = new Faker(new Locale("es"));
+    * */
 
-    private Transactions createTransaction(int userId, String forcedType, String forcedMonth) {
-
-        List<String> expensesCategory = Arrays.asList("Transporte", "Salud",
-                "Vivienda", "Viaje", "Entretenimiento", "Educación");
-
+    private Transactions createTransaction(int userId, String type, String month) {
+        List<String> expensesCategory = Arrays.asList("Transporte", "Salud", "Vivienda", "Viaje", "Entretenimiento", "Educación");
         List<String> incomeCategory = Arrays.asList("Salario", "Freelance", "Inversión", "Venta de casa", "Regalo", "Otros");
 
-        if(!userExist(userId)) {
+        if (!validUser.contains(userId)) {
             throw new UserNotFoundException("Usuario no encontrado");
         }
 
-        String type = forcedType != null ? forcedType : faker.options().option("income", "expenses");
+        // Generar monto con 2 decimales
+        double amount = type.equals("income")
+                ? BigDecimal.valueOf(faker.number().numberBetween(800, 5000)).setScale(2, RoundingMode.HALF_UP).doubleValue()
+                : BigDecimal.valueOf(faker.number().numberBetween(50, 2000)).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-        // Aseguramos que el monto sea mayor que cero
-        double amount = faker.number().randomDouble(2, 1, 5000);
-
-        String title = type.equals("income") ? faker.company().profession() : faker.commerce().productName();
-        String category = type.equals("income") ? faker.options().option(incomeCategory.toArray(new String[0]))
+        // Seleccionar categoría según el tipo
+        String category = type.equals("income")
+                ? faker.options().option(incomeCategory.toArray(new String[0]))
                 : faker.options().option(expensesCategory.toArray(new String[0]));
 
-        // Generar fecha para el mes especificado o aleatoria entre enero y febrero
-        LocalDate date;
-        if (forcedMonth != null) {
-            int year = 2025;
-            int month = Integer.parseInt(forcedMonth);
-            int day = faker.number().numberBetween(1, month == 2 ? 29 : 31);
-            date = LocalDate.of(year, month, day);
-        } else {
-            LocalDate startDate = LocalDate.of(2025, 1, 1);
-            LocalDate endDate = LocalDate.of(2025, 12, 30);
-            date = faker.date().between(
-                    Date.from(startDate.atStartOfDay(ZoneId.systemDefault()).toInstant()),
-                    Date.from(endDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            ).toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        }
+        // Crear fecha para el mes especificado
+        String date = String.format("2025-%s-%02d", month, faker.number().numberBetween(1, 28));
 
-        String formattedDate = date.format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-        return new Transactions(userId, faker.number().numberBetween(1, 3), title, category, formattedDate, type, amount);
+        return new Transactions(
+                userId,
+                faker.number().numberBetween(1, 3),
+                type.equals("income") ? faker.company().profession() : faker.commerce().productName(),
+                category,
+                date,
+                type,
+                amount
+        );
     }
 
     public List<Transactions> getTransactions(int userId) {
-        List<Transactions> transactionsUser = new ArrayList<>();
+        List<Transactions> transactions = new ArrayList<>();
+        // Generar 1 ingreso y 1 gasto para cada mes
+        for (int month = 1; month <= 12; month++) {
+            String formattedMonth = String.format("%02d", month);
 
+            // Agregar un ingreso
+            transactions.add(createTransaction(userId, "income", formattedMonth));
 
-        transactionsUser.add(createTransaction(userId, "income", "01"));
-        transactionsUser.add(createTransaction(userId, "expenses", "01"));
+            // Agregar un gasto
+            transactions.add(createTransaction(userId, "expenses", formattedMonth));
 
-
-
-        // Generar transacciones adicionales aleatorias, asegurando balance entre ingresos y gastos
-        int remainingTransactions = 16;
-        int incomeCount = 2;
-        int expensesCount = 2;
-
-        while (remainingTransactions > 0) {
-            String type;
-            if (incomeCount < 8) {
-                type = "income";
-                incomeCount++;
-            } else if (expensesCount < 8) {
-                type = "expenses";
-                expensesCount++;
-            } else {
-                type = faker.options().option("income", "expenses");
-                if (type.equals("income")) incomeCount++;
-                else expensesCount++;
+            // Agregar transacciones extra
+            for (int i = 0; i < 5; i++) {
+                // Alternar entre ingresos y gastos
+                String type = (i % 2 == 0) ? "income" : "expenses";
+                transactions.add(createTransaction(userId, type, formattedMonth));
             }
-
-            transactionsUser.add(createTransaction(userId, type, null));
-            remainingTransactions--;
         }
 
-        // Mezclar las transacciones para que no estén en un orden predecible
-        Collections.shuffle(transactionsUser);
-
-        return transactionsUser;
+        return transactions;
     }
 
     public List<Transactions> getTransactionByUserAndMonth(int userId, String month) {

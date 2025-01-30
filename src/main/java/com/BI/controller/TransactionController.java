@@ -23,7 +23,7 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @Operation( summary = "Obtner Ingresos o gastos de  un usuario",
+    @Operation( summary = "Obtner Ingresos y gastos de  un usuario(Faker)",
             description = "Obitiene ingresos o gastos de un usuario, con los datos de cada entrada")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Expenses successfully retrieved"),

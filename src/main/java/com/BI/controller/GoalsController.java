@@ -29,7 +29,7 @@ public class GoalsController {
      }
     //obtener metas de un usuario
 
-    @Operation( summary = "Obtner metas por usuario",
+    @Operation( summary = "Obtner metas por usuario(Faker)",
             description = "Aqui podras obtener resultados de metas, si han sido cumplidas o no")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Goals successfully retrieved"),

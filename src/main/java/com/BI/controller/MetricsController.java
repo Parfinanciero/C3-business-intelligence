@@ -30,6 +30,32 @@ public class MetricsController {
         this.metricService = metricService;
     }
 
+
+
+    @Operation(
+            summary = "Calcula porcentaje  de balance general(Faker)",
+            description = "Este método calcula el balance general de ingresos y gastos, " +
+                    "y devuelve el estado financiero.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Cálculo exitoso de la relación",
+                            content = @Content(mediaType = "application/json",
+                                    schema = @Schema(implementation = MetricResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Solicitud incorrecta debido a  gasto cero",
+                            content = @Content(mediaType = "application/json")
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Error interno del servidor",
+                            content = @Content(mediaType = "application/json")
+                    )
+            }
+    )
     @GetMapping("balance-general/{id}")
     public ResponseEntity<?> balanceSheet(@PathVariable int id){
         return ResponseEntity.status(HttpStatus.OK).body(metricService.balanceSheet(id));
@@ -71,7 +97,7 @@ public class MetricsController {
 
 
     @Operation(
-            summary = "Calcula porcentaje  gastos por categoria",
+            summary = "Calcula porcentaje  gastos por categoria(Faker)",
             description = "Este método calcula el balance  de gastos por categoria de un usuario, " +
                     "y devuelve el estado financiero basado en la proporción.",
             responses = {
@@ -94,7 +120,7 @@ public class MetricsController {
                     )
             }
     )
-    @GetMapping("/balance/{id}/{month}/gastos")
+    @GetMapping("/gastos-categoria/{id}/{month}/")
     public ResponseEntity<List<CashByCategoryResponse>> ExpensesCategory(
             @PathVariable Integer id ,
             @PathVariable String month){
