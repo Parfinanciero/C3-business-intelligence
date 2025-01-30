@@ -26,11 +26,16 @@ public class TransactionServiceImpl implements ITransactionService {
     private boolean userExist(int userId) {
         return validUser.contains(userId);
     }
-    /* Este metodo sirve para crear transacciones de un usuario con datos generados por
-     java faker
-     generamos array de cateorias para tomarlas como base
-
-    * */
+    /**
+     * Genera una transacción aleatoria para un usuario en un mes específico.
+     * Se asegura de que la transacción tenga una categoría, fecha y monto válido.
+     *
+     * @param userId ID del usuario al que pertenece la transacción.
+     * @param type Tipo de transacción ("income" o "expenses").
+     * @param month Mes de la transacción en formato "MM".
+     * @return Objeto Transactions con datos generados aleatoriamente.
+     * @throws UserNotFoundException si el usuario no existe.
+     */
 
     private Transactions createTransaction(int userId, String type, String month) {
         List<String> expensesCategory = Arrays.asList("Transporte", "Salud", "Vivienda", "Viaje", "Entretenimiento", "Educación");
@@ -40,17 +45,14 @@ public class TransactionServiceImpl implements ITransactionService {
             throw new UserNotFoundException("Usuario no encontrado");
         }
 
-        // Generar monto con 2 decimales
         double amount = type.equals("income")
                 ? BigDecimal.valueOf(faker.number().numberBetween(800, 5000)).setScale(2, RoundingMode.HALF_UP).doubleValue()
                 : BigDecimal.valueOf(faker.number().numberBetween(50, 2000)).setScale(2, RoundingMode.HALF_UP).doubleValue();
 
-        // Seleccionar categoría según el tipo
         String category = type.equals("income")
                 ? faker.options().option(incomeCategory.toArray(new String[0]))
                 : faker.options().option(expensesCategory.toArray(new String[0]));
 
-        // Crear fecha para el mes especificado
         String date = String.format("2025-%s-%02d", month, faker.number().numberBetween(1, 28));
 
         return new Transactions(
@@ -64,21 +66,24 @@ public class TransactionServiceImpl implements ITransactionService {
         );
     }
 
+    /**
+     * Genera una lista de transacciones de prueba para un usuario.
+     * Incluye al menos un ingreso y un gasto por mes, además de transacciones adicionales.
+     *
+     * @param userId ID del usuario para el cual se generan las transacciones.
+     * @return Lista de transacciones generadas aleatoriamente para 12 meses.
+     */
+
     public List<Transactions> getTransactions(int userId) {
         List<Transactions> transactions = new ArrayList<>();
-        // Generar 1 ingreso y 1 gasto para cada mes
         for (int month = 1; month <= 12; month++) {
             String formattedMonth = String.format("%02d", month);
 
-            // Agregar un ingreso
             transactions.add(createTransaction(userId, "income", formattedMonth));
 
-            // Agregar un gasto
             transactions.add(createTransaction(userId, "expenses", formattedMonth));
 
-            // Agregar transacciones extra
             for (int i = 0; i < 5; i++) {
-                // Alternar entre ingresos y gastos
                 String type = (i % 2 == 0) ? "income" : "expenses";
                 transactions.add(createTransaction(userId, type, formattedMonth));
             }
@@ -86,6 +91,14 @@ public class TransactionServiceImpl implements ITransactionService {
 
         return transactions;
     }
+
+    /**
+     * Filtra y devuelve las transacciones de un usuario para un mes específico.
+     *
+     * @param userId ID del usuario cuyas transacciones se van a obtener.
+     * @param month Mes en formato "MM" para filtrar las transacciones.
+     * @return Lista de transacciones del usuario correspondientes al mes indicado.
+     */
 
     public List<Transactions> getTransactionByUserAndMonth(int userId, String month) {
 

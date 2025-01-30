@@ -16,6 +16,11 @@ public class GoalServiceImpl implements IGoalsService {
 
     private final Faker faker = new Faker();
 
+    /** MEtodo que devuelve datos falsos de metas de un usuario usando faker libreria
+     * @param userId  Id del usuario
+
+     * @return GoalResponseDto una lista de metas
+     * */
     @Override
     public List<GoalResponseDto> getUserGoalsByUserId(String userId) {
         List<GoalResponseDto> goals = generateMockGoals(userId);
@@ -47,6 +52,11 @@ public class GoalServiceImpl implements IGoalsService {
             return goals;
         }
 
+    /** MEtodo que genera datos falsos de metas de un usuario usando faker libreria
+     * @param userId  Id del usuario
+
+     * @return GoalResponseDto una lista de metas
+     * */
     private GoalResponseDto generateMockGoal(String userId) {
         String[] goalTypes = {
                 "Ahorrar", "Invertir", "Reducir gastos en",

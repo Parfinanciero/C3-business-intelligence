@@ -36,7 +36,14 @@ public class MetricsServiceImpl implements IMetricService {
         this.expensesService = expensesService;
         this.transactionService = transactionService;
     }
-
+    /**
+     * MEtodo que Calcula la proporción entre ingresos y gastos de un usuario en un mes determinado.
+     *
+     * @param idUser ID del usuario.
+     * @param month Mes en formato "MM".
+     * @return Objeto MetricResponseDto con los ingresos, gastos, proporción y estado financiero.
+     * @throws InvalidRequestException si el ID o el mes son nulos o vacíos.
+     */
     @Override
     public MetricResponseDto calculateIncomeAndExpenseRatio(Integer idUser, String month) {
         if(idUser== null|| month==null || month.isEmpty()){
@@ -52,14 +59,9 @@ public class MetricsServiceImpl implements IMetricService {
         BigDecimal expense = new BigDecimal(expenseTotal);
 
 
-
-        // esta validacion se hace para tener en cuenta que el ingreso puede ser cero
-        // y en matematicas no se puede dividir por cero
-        // para evitar ese error validamos para no dividir por cero
         BigDecimal proportion = income.divide(expense, 2, RoundingMode.HALF_UP);
 
 
-        // ahora vamos a determinar el estado
         FinancialStatus status;
         if(proportion.compareTo(BigDecimal.ONE) > 0 ){
            status =   FinancialStatus.OVERSPENDING;
@@ -88,6 +90,7 @@ public class MetricsServiceImpl implements IMetricService {
                 formatter.format(balanceSheet)
         );
     }
+
 
     @Override
     public List<CashByCategoryResponse> calculateExpensesByCategory(Integer id, String month) {
