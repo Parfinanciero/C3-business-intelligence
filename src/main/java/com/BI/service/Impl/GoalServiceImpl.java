@@ -86,6 +86,11 @@ public class GoalServiceImpl implements IGoalsService {
         return goalResponseDto;
     }
 
+    /** MEtodo que genera sugerencias teniendo en cuenta las metas
+     * @param goal  metas generadas del usuario
+
+     * */
+
     private void generateSuggestions(GoalResponseDto goal) {
             double progressPercentage = (goal.getCurrentAmount() / goal.getGoalAmount()) * 100;
             double remaining = goal.getGoalAmount() - goal.getCurrentAmount();
