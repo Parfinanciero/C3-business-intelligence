@@ -29,7 +29,6 @@ jobs:
                     host: ${{ secrets.SERVER_HOST }}
                     username: ${{ secrets.SERVER_USERNAME }}
                     key: ${{ secrets.SERVER_KEY }}
-                    port: ${{ secrets.SERVER_PORT }}
                     script: |
                         DEPLOY_DIR="/home/admin_jb_3"
                         LOGS_DIR="$DEPLOY_DIR/logs"
