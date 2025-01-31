@@ -21,8 +21,8 @@ logging:
   level:
     root: info
     org:
-      springframework: debug
-    org.springframework.web.reactive.function.client.WebClient: DEBUG
+      springframework: error
+    org.springframework.web.reactive.function.client.WebClient: ERROR
   file:
     name: logs/application.log
     max-size: 10MB
@@ -31,7 +31,7 @@ logging:
 #External APIs configuration
 external-apis:
   api1:
-    base-url: https://parfinancieraspringboot-2.onrender.com/swagger-ui.html/api/v1/user
+    base-url: https://parfinancieraspringboot-2.onrender.com/api/v1/user
     connection-timeout: 5000
     read-timeout: 5000
     write-timeout: 5000
