@@ -2,22 +2,6 @@
 server:
   port: 8081
 
-#Database configuration
-spring:
-  datasource:
-    url: dbc:mysql://beajzoq1yzlj5drogqzl-mysql.services.clever-cloud.com/beajzoq1yzlj5drogqzl
-    username: ucet1kqkhzpz25to
-    password: Ktsk8XnHeoVkYA0ZI5aM
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
-
   #WebClient configuration
   webflux:
     client:
@@ -38,7 +22,6 @@ logging:
     root: info
     org:
       springframework: debug
-    # Add WebClient specific logging
     org.springframework.web.reactive.function.client.WebClient: DEBUG
   file:
     name: logs/application.log
@@ -57,3 +40,30 @@ external-apis:
       initial-interval: 1000
       multiplier: 2.0
       max-interval: 10000
+
+#perfil test
+---
+spring:
+  config:
+    activate:
+      on-profile: test
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: sa
+    password: password
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+server:
+  port: 8082
