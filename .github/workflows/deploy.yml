@@ -1,7 +1,6 @@
 name: Deploy to VPS
 
 on:
-
   push:
     branches:
       - main
@@ -49,6 +48,9 @@ jobs:
 
           echo "Matando proceso anterior (si existe)..."
           ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo pkill -f $APP_JAR || true"
+          
+          # Agregar este comando para eliminar el proceso nohup
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo pkill -f nohup || true"
 
           echo "Copiando el nuevo JAR..."
           scp -P ${{ secrets.PORT }} target/*.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$DEPLOY_DIR/
@@ -58,4 +60,4 @@ jobs:
             nohup java -jar $DEPLOY_DIR/$APP_JAR > $LOGS_DIR/output.log 2>&1 & \
           "
 
-          echo "Deploy completed"
+          echo "Deploy completed"
