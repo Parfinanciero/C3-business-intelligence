@@ -120,7 +120,7 @@ public class MetricsController {
                     )
             }
     )
-    @GetMapping("/gastos-categoria/{id}/{month}/")
+    @GetMapping("/gastos-categoria/{id}/{month}")
     public ResponseEntity<List<CashByCategoryResponse>> ExpensesCategory(
             @PathVariable Integer id ,
             @PathVariable String month){

@@ -1,3 +1,9 @@
 2025-01-31T12:21:07.250-05:00  INFO 8185 --- [main] c.B.BussinesIntelligenceApplicationTests : Starting BussinesIntelligenceApplicationTests using Java 21.0.5 with PID 8185 (started by nar in /home/nar/IdeaProjects/C3-business-intelligence)
 2025-01-31T12:21:07.325-05:00  INFO 8185 --- [main] c.B.BussinesIntelligenceApplicationTests : The following 1 profile is active: "dev"
 2025-01-31T12:21:13.161-05:00  INFO 8185 --- [main] c.B.BussinesIntelligenceApplicationTests : Started BussinesIntelligenceApplicationTests in 8.524 seconds (process running for 16.583)
+2025-01-31T14:36:18.690-05:00  INFO 10710 --- [main] c.B.BussinesIntelligenceApplicationTests : Starting BussinesIntelligenceApplicationTests using Java 21.0.5 with PID 10710 (started by rwadmin in /home/rwadmin/Documentos/C3-business-intelligence)
+2025-01-31T14:36:18.691-05:00  INFO 10710 --- [main] c.B.BussinesIntelligenceApplicationTests : The following 1 profile is active: "dev"
+2025-01-31T14:36:19.917-05:00  INFO 10710 --- [main] c.B.BussinesIntelligenceApplicationTests : Started BussinesIntelligenceApplicationTests in 1.48 seconds (process running for 2.12)
+2025-01-31T14:46:57.995-05:00  INFO 12404 --- [main] c.B.BussinesIntelligenceApplicationTests : Starting BussinesIntelligenceApplicationTests using Java 21.0.5 with PID 12404 (started by rwadmin in /home/rwadmin/Documentos/C3-business-intelligence)
+2025-01-31T14:46:57.996-05:00  INFO 12404 --- [main] c.B.BussinesIntelligenceApplicationTests : The following 1 profile is active: "dev"
+2025-01-31T14:46:58.997-05:00  INFO 12404 --- [main] c.B.BussinesIntelligenceApplicationTests : Started BussinesIntelligenceApplicationTests in 1.228 seconds (process running for 1.725)
