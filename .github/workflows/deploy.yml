@@ -53,11 +53,15 @@ jobs:
           ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo pkill -f nohup || true"
 
           echo "Copiando el nuevo JAR..."
-          scp -P ${{ secrets.PORT }} target/*.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$DEPLOY_DIR/
+          scp -P ${{ secrets.PORT }} target/*.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/tmp/
+
+          echo "Moviendo el JAR a la carpeta destino con sudo..."
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo mv /tmp/$APP_JAR $DEPLOY_DIR/"
+
+          echo "Asegurando permisos correctos..."
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo chown root:root $DEPLOY_DIR/$APP_JAR && sudo chmod 755 $DEPLOY_DIR/$APP_JAR"
 
           echo "Iniciando la aplicación en segundo plano..."
-          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "\
-            nohup java -jar $DEPLOY_DIR/$APP_JAR > $LOGS_DIR/output.log 2>&1 & \
-          "
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo nohup java -jar $DEPLOY_DIR/$APP_JAR > $LOGS_DIR/output.log 2>&1 &"
 
           echo "Deploy completed"
