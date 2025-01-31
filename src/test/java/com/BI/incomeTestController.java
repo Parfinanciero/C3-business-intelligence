@@ -81,7 +81,14 @@ public class incomeTestController {
                 .andExpect(jsonPath("$.month").value(month));
     }
 
-
+    /**
+     * Metodo para testear el metodo para obtener ingresos  de un usuario
+     * a través de una api externa
+     * se construyen los datos de prueba
+     * se construye la respuesta
+     * Simula la llamada http y verifica la respuesta
+     *
+     * */
     @Test
     public void testTotalIncomeExternalApi_NotFound() throws Exception {
         // Datos de prueba
