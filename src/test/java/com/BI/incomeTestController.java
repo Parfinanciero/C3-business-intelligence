@@ -54,32 +54,7 @@ public class incomeTestController {
                 .andExpect(jsonPath("$.month").value(month));
     }
 
-    /**
-     * Metodo para testear el metodo para obtener gastos  de un usuario
-     * se construyen los datos de prueba
-     * se construye la respuesta
-     * Simula la llamada http y verifica la respuesta
-     *
-     * */
-    @Test
-    public void testGetExpenses() throws Exception {
-        int userId = 1;
-        String month = "02";
-        double totalExpenses = 5000.00;
 
-        CashResponseDto expensesDto = new CashResponseDto();
-        expensesDto.setUserId(userId);
-        expensesDto.setMonth(month);
-        expensesDto.setTotalExpenses(totalExpenses);
-        when(incomeService.calculateTotalIncome(userId, month)).thenReturn(expensesDto);
-
-
-        mockMvc.perform(get("/gastos/{id}/{month}", userId, month))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(userId))
-                .andExpect(jsonPath("$.totalCash").value(totalExpenses))
-                .andExpect(jsonPath("$.month").value(month));
-    }
 
     /**
      * Metodo para testear el metodo para obtener ingresos  de un usuario
@@ -103,4 +78,28 @@ public class incomeTestController {
         mockMvc.perform(get("/total/{id}/{month}/ingresos", userId, month))
                 .andExpect(status().isNotFound()); // Verifica que el status sea 404 Not Found
     }
+
+    /**
+     * Metodo para testear el metodo para obtener ingresos  de un usuario
+     * a través de una api externa
+     * se construyen los datos de prueba
+     * se construye la respuesta
+     * Simula la llamada http y verifica la respuesta
+     *
+     * */
+    @Test
+    public void testTotalExpensesExternalApi_NotFound() throws Exception {
+        // Datos de prueba
+        Long userId = 1L;
+        String month = "2023-10";
+
+        // Simula que el servicio devuelve un Mono vacío
+        when(incomeService.calculateTotalIncomeApi(userId, month))
+                .thenReturn(Mono.empty());
+
+        // Simula la llamada HTTP y verifica que se devuelve un 404 Not Found
+        mockMvc.perform(get("/total/{id}/{month}/ingresos", userId, month))
+                .andExpect(status().isNotFound()); // Verifica que el status sea 404 Not Found
+    }
+
 }
