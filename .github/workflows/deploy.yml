@@ -42,9 +42,9 @@ jobs:
       # 6. Desplegar la aplicación en la VPS
       - name: Deploy to VPS
         run: |
-          DEPLOY_DIR="/home/admin_jb_3"
+          DEPLOY_DIR="/var/www/backend-bi/C3-business-intelligence"
           LOGS_DIR="$DEPLOY_DIR/logs"
-          APP_JAR="Bussiness-0.0.1-SNAPSHOT.jar"
+          APP_JAR="Bussines-intelligence-0.0.1-SNAPSHOT.jar"
 
           echo "Matando proceso anterior (si existe)..."
           ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo pkill -f $APP_JAR || true"
