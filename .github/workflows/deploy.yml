@@ -42,7 +42,7 @@ jobs:
       # 6. Desplegar la aplicación en la VPS
       - name: Deploy to VPS
         run: |
-          DEPLOY_DIR="/var/www/backend-bi/C3-business-intelligence"
+          DEPLOY_DIR="/var/www/backend-bi/C3-business-intelligence/target"
           LOGS_DIR="$DEPLOY_DIR/logs"
           APP_JAR="Bussines-intelligence-0.0.1-SNAPSHOT.jar"
 
