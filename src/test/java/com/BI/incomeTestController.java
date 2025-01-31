@@ -30,23 +30,40 @@ public class incomeTestController {
      *
      * */
     @Test
-    void testGetIncome() throws Exception {
+   public void testGetIncome() throws Exception {
         // Datos de prueba
         int userId = 1;
         String month = "07"; // Julio
         double totalExpenses = 5000.00;
 
-        // Crear objeto de respuesta esperado
         CashResponseDto ingresosEsperados = new CashResponseDto();
         ingresosEsperados.setUserId(userId);
         ingresosEsperados.setTotalExpenses(totalExpenses);
         ingresosEsperados.setMonth(month);
 
-        // Simular respuesta del servicio
         Mockito.when(incomeService.calculateTotalIncome(userId, month)).thenReturn(ingresosEsperados);
 
-        // Simular llamada HTTP y verificar respuesta JSON
         mockMvc.perform(get("/ingresos/{id}/{month}", userId, month))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userId").value(userId))
+                .andExpect(jsonPath("$.totalExpenses").value(totalExpenses))
+                .andExpect(jsonPath("$.month").value(month));
+    }
+
+    @Test
+    public void testGetExpenses() throws Exception {
+        int userId = 1;
+        String month = "02";
+        double totalExpenses = 5000.00;
+
+        CashResponseDto expensesDto = new CashResponseDto();
+        expensesDto.setUserId(userId);
+        expensesDto.setMonth(month);
+        expensesDto.setTotalExpenses(totalExpenses);
+        Mockito.when(incomeService.calculateTotalIncome(userId, month)).thenReturn(expensesDto);
+
+
+        mockMvc.perform(get("/gastos/{id}/{month}", userId, month))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.userId").value(userId))
                 .andExpect(jsonPath("$.totalExpenses").value(totalExpenses))
