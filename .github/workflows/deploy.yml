@@ -1,43 +1,66 @@
 name: Deploy to VPS
 
 on:
-    push:
-        branches:
-            - main
+  push:
+    branches:
+      - main
 
 jobs:
-    deploy:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+  deploy:
+    runs-on: ubuntu-latest
 
-            - name: Set up Java
-              uses: actions/setup-java@v3
-              with:
-                  java-version: '21'
-                  distribution: 'temurin'
+    steps:
+      # 1. Checkout del código
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-            - name: Build JAR file with Maven
-              run: mvn clean package
-                   ls -l target/*.jar
-        
-            - name: Deploy to Server
-              uses: appleboy/ssh-action@v1
-              with:
-                    host: ${{ secrets.SERVER_HOST }}
-                    username: ${{ secrets.SERVER_USERNAME }}
-                    key: ${{ secrets.SERVER_KEY }}
-                    port: ${{ secrets.SERVER_PORT }}
-                    script: |
-                        DEPLOY_DIR="/home/admin_jb_3"
-                        LOGS_DIR="$DEPLOY_DIR/logs"
-                        APP_JAR="Bussiness-0.0.1-SNAPSHOT.jar"
+      # 2. Configurar Java
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
-                        sudo pkill -f $APP_JAR || true
+      # 3. Construir el Jar con Maven
+      - name: Build JAR file with Maven
+        run: |
+          mvn clean package
+          ls -l target/*.jar
 
-                        scp target/*.jar $DEPLOY_DIR/
+      # 4. Añadir el host SSH a known_hosts
+      - name: Add SSH Key to Known Hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-                        nohup java -jar $DEPLOY_DIR/$APP_JAR > $LOGS_DIR/output.log 2>&1 &
+      # 5. Configurar la clave SSH para el acceso (agente SSH)
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SERVER_KEY }}
 
-                        echo "Deploy completed"
+      # 6. Desplegar la aplicación en la VPS
+      - name: Deploy to VPS
+        run: |
+          DEPLOY_DIR="/var/www/backend-bi/C3-business-intelligence"
+          LOGS_DIR="$DEPLOY_DIR/logs"
+          APP_JAR="Bussines-intelligence-0.0.1-SNAPSHOT.jar"
+
+          # Asignar permisos al directorio de destino para el usuario (si es necesario)
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo chown -R ${{ secrets.SERVER_USER }}:$${{ secrets.SERVER_USER }} $DEPLOY_DIR || true"
+          
+          echo "Matando proceso anterior (si existe)..."
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo pkill -f $APP_JAR || true"
+          
+          # Agregar este comando para eliminar el proceso nohup
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo pkill -f nohup || true"
+
+          echo "Copiando el nuevo JAR..."
+          scp -P ${{ secrets.PORT }} target/*.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$DEPLOY_DIR/
+
+          echo "Iniciando la aplicación en segundo plano..."
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "\
+            nohup java -jar $DEPLOY_DIR/$APP_JAR > $LOGS_DIR/output.log 2>&1 & \
+          "
+
+          echo "Deploy completed"

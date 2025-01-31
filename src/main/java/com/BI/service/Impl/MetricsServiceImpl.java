@@ -1,23 +1,25 @@
 package com.BI.service.Impl;
 
-import com.BI.Exceptions.Custom.CustomArithmeticExceptions;
 import com.BI.Exceptions.Custom.InvalidRequestException;
-import com.BI.Exceptions.Custom.NoIncomeException;
 import com.BI.Utils.FinancialStatus;
-import com.BI.dto.ResponseDto.BalanceSheetDto;
-import com.BI.dto.ResponseDto.CashResponseDto;
-import com.BI.dto.ResponseDto.MetricResponseDto;
+import com.BI.dto.ResponseDto.*;
 import com.BI.service.IExpensesService;
 import com.BI.service.IMetricService;
+import com.BI.service.ITransactionService;
 import com.BI.service.IncomeService;
 import com.github.javafaker.Faker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
+import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class MetricsServiceImpl implements IMetricService {
@@ -25,13 +27,23 @@ public class MetricsServiceImpl implements IMetricService {
     private final Faker faker = new Faker();
     private final IncomeService incomeService;
     private final IExpensesService expensesService;
+    private final ITransactionService transactionService;
+    private final Logger logger = LoggerFactory.getLogger(MetricsServiceImpl.class);
 
     @Autowired
-    public  MetricsServiceImpl (IncomeService incomeService, IExpensesService expensesService){
+    public  MetricsServiceImpl (IncomeService incomeService, IExpensesService expensesService, ITransactionService transactionService){
         this.incomeService = incomeService;
         this.expensesService = expensesService;
+        this.transactionService = transactionService;
     }
-
+    /**
+     * MEtodo que Calcula la proporción entre ingresos y gastos de un usuario en un mes determinado.
+     *
+     * @param idUser ID del usuario.
+     * @param month Mes en formato "MM".
+     * @return Objeto MetricResponseDto con los ingresos, gastos, proporción y estado financiero.
+     * @throws InvalidRequestException si el ID o el mes son nulos o vacíos.
+     */
     @Override
     public MetricResponseDto calculateIncomeAndExpenseRatio(Integer idUser, String month) {
         if(idUser== null|| month==null || month.isEmpty()){
@@ -47,23 +59,9 @@ public class MetricsServiceImpl implements IMetricService {
         BigDecimal expense = new BigDecimal(expenseTotal);
 
 
-
-        // esta validacion se hace para tener en cuenta que el ingreso puede ser cero
-        // y en matematicas no se puede dividir por cero
-        // para evitar ese error validamos para no dividir por cero
-       if(income.compareTo(BigDecimal.ZERO) == 0){
-       throw  new NoIncomeException("No se puede realizar el calculo porque no tiene ingresos.");
-       }
-
-       if(expense.compareTo(BigDecimal.ZERO) == 0){
-           throw  new CustomArithmeticExceptions("No se puede realizar el cálculo debido a la división por cero en los gastos.");
-
-       }
-
         BigDecimal proportion = income.divide(expense, 2, RoundingMode.HALF_UP);
 
 
-        // ahora vamos a determinar el estado
         FinancialStatus status;
         if(proportion.compareTo(BigDecimal.ONE) > 0 ){
            status =   FinancialStatus.OVERSPENDING;
@@ -91,5 +89,48 @@ public class MetricsServiceImpl implements IMetricService {
                 formatter.format(totalExpense),
                 formatter.format(balanceSheet)
         );
+    }
+
+
+    @Override
+    public List<CashByCategoryResponse> calculateExpensesByCategory(Integer id, String month) {
+        logger.info("Iniciando cálculo de gastos por categoría - id: {}, mes: {}", id, month);
+
+        if(id == null || month == null || month.isEmpty()){
+            logger.error("ID o mes inválidos - id: {}, mes: {}", id, month);
+            throw new InvalidRequestException("el id y mes no pueden estar vacíos");
+        }
+
+        List<Transactions> transactionsUser = this.transactionService.getTransactionByUserAndMonth(id, month);
+
+        List<Transactions> expenses = transactionsUser.stream()
+                .filter(transaction -> "expenses".equals(transaction.getType()))
+                .toList();
+
+        double totalExpenses = expenses.stream()
+                .mapToDouble(Transactions::getAmount)
+                .sum();
+
+        if (totalExpenses == 0) {
+            logger.info("No se encontraron gastos para el período");
+            return Collections.emptyList();
+        }
+
+        return expenses.stream()
+                .collect(Collectors.groupingBy(
+                        Transactions::getCategory,
+                        Collectors.summingDouble(Transactions::getAmount)
+                )).entrySet().stream()
+                .map(entry -> {
+                    double percentage = (entry.getValue() / totalExpenses) * 100;
+                    double roundedPercentage = Math.round(percentage * 100.0) / 100.0;
+                    logger.debug("Categoría: {}, Monto: {}, Total: {}, Porcentaje: {}",
+                            entry.getKey(),
+                            entry.getValue(),
+                            totalExpenses,
+                            roundedPercentage);
+                    return new CashByCategoryResponse(entry.getKey(), roundedPercentage);
+                })
+                .toList();
     }
 }

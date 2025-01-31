@@ -2,10 +2,7 @@ package com.BI.service.Impl;
 
 import com.BI.Exceptions.Custom.CashApiExceptions;
 import com.BI.Exceptions.Custom.InvalidRequestException;
-import com.BI.dto.ResponseDto.CashResponseDto;
-import com.BI.dto.ResponseDto.GetTransactionResponse;
-import com.BI.dto.ResponseDto.GetCashResponse;
-import com.BI.dto.ResponseDto.Transactions;
+import com.BI.dto.ResponseDto.*;
 import com.BI.service.IExpensesService;
 import com.BI.service.ITransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +10,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ExpenseServiceImpl  implements IExpensesService {
@@ -29,12 +29,11 @@ public class ExpenseServiceImpl  implements IExpensesService {
         this.webClient = webClient;
     }
 
-    //metodo para sumar los gastos totales
-    //se crea una lista de la clase transacciones
-    //se usa la clase filter para crea una lista con los que cumples con la conficion
-    // que el tipo se igual a expenses
-    // se convierte el la transaccion en una suma del atributo amount
-    @Override
+    /** MEtodo para calcular el total de gastos generados por un usuario apartir de datos falsos
+     * @param id Id del usuario
+     * @param month mes solicitado
+     * @return CashResponseDto devuelve un dto con id usuario, total y el mes
+     * */
     public CashResponseDto calculateTotalExpenses(Integer id,String month) {
 
         if(id == null){
@@ -51,6 +50,12 @@ public class ExpenseServiceImpl  implements IExpensesService {
 
     }
 
+
+    /** MEtodo para calcular el total de gastos generados por un usuario apartir de datos de una api externa
+     * @param id Id del usuario
+     * @param month mes solicitado
+     * @return GetTransactionResponse devuelve un dto con id usuario, total y el mes
+     * */
     @Override
     public Mono<GetTransactionResponse> calculateTotalExpensesApi(Long id, String month) {
         return  webClient.get()

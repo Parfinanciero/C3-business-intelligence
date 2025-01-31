@@ -3,12 +3,12 @@ package com.BI.dto.ResponseDto;
 
 public class CashResponseDto {
     private int userId;
-    private Double totalExpenses;
+    private Double totalCash;
     private String month;
 
     public CashResponseDto(int userId, Double totalExpenses, String month) {
         this.userId = userId;
-        this.totalExpenses = totalExpenses;
+        this.totalCash = totalExpenses;
         this.month = month;
     }
 
@@ -31,10 +31,10 @@ public class CashResponseDto {
     }
 
     public Double getTotalExpenses() {
-        return totalExpenses;
+        return totalCash;
     }
 
     public void setTotalExpenses(Double totalExpenses) {
-        this.totalExpenses = totalExpenses;
+        this.totalCash = totalExpenses;
     }
 }

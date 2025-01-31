@@ -29,6 +29,12 @@ public class IncomeServiceImpl implements IncomeService {
         this.webClient  = webClient;
     }
 
+    /** MEtodo que calcula el total de ingresos de un usuario con datos falsos
+     * @param id  Id del usuario
+     * @param  month Mes solicitado
+     * @return CashResponseDto dto con el total de gastos el id del usuario y el mes
+     * */
+
     @Override
     public CashResponseDto calculateTotalIncome(Integer id, String month) {
 
@@ -44,6 +50,12 @@ public class IncomeServiceImpl implements IncomeService {
         return new CashResponseDto(id,totalIncome,month);
 
     }
+
+    /** MEtodo que calcula el total de ingresos de un usuario haciendo una peticion a una api
+     * @param id  Id del usuario
+     * @param  month Mes solicitado
+     * @return CashResponseDto dto con el total de gastos el id del usuario y el mes
+     * */
 
     @Override
     public Mono<GetTransactionResponse> calculateTotalIncomeApi(Long id, String month) {
