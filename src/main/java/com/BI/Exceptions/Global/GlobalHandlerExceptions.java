@@ -40,7 +40,7 @@ public class GlobalHandlerExceptions {
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getMessage(),
                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                ("ERROR_API_EXPENSES")
+                ("ERROR_API")
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 
@@ -53,7 +53,7 @@ public class GlobalHandlerExceptions {
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getMessage(),
                 HttpStatus.NOT_FOUND.value(),
-                ("ERROR_API_EXPENSES")
+                ("CASHFLOW_NOT_FOUND")
         );
         return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
     }
