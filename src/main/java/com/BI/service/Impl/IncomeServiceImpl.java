@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
@@ -61,18 +62,25 @@ public class IncomeServiceImpl implements IncomeService {
     public Mono<GetTransactionResponse> calculateTotalIncomeApi(Long id, String month) {
 
         return webClient.get()
-                .uri("/income/{id}/{month}",id,month)
+                .uri("/income/{id}/{month}", id, month)
                 .retrieve()
                 .onStatus(HttpStatusCode::is4xxClientError,
                         response -> Mono.error(new CashApiExceptions("Datos no encontrados para ID " + id + " y mes " + month)))
                 .onStatus(HttpStatusCode::is5xxServerError,
-                        response -> Mono.error(new CashApiExceptions("Error en el servidor externo al recuperar datos")))
+                        response -> {
+                            return response.bodyToMono(String.class)
+                                    .flatMap(body -> Mono.error(new CashApiExceptions("Error en el servidor externo: " + body)));
+                        })
                 .bodyToFlux(GetCashResponse.class)
                 .map(GetCashResponse::getAmount)
                 .filter(Objects::nonNull)
                 .reduce(Double::sum)
-                .map(total-> new GetTransactionResponse(total,id,month));
-
+                .map(total -> new GetTransactionResponse(total, id, month))
+                .onErrorResume(WebClientRequestException.class, e -> {
+                    String errorMessage = "Hubo un problema al intentar obtener los ingresos. Intenta más tarde.";
+                    return Mono.error(new CashApiExceptions(errorMessage));
+                });
     }
+
 
 }

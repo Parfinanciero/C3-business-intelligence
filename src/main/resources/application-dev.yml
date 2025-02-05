@@ -2,22 +2,6 @@
 server:
   port: 8081
 
-#Database configuration
-spring:
-  datasource:
-    url: dbc:mysql://beajzoq1yzlj5drogqzl-mysql.services.clever-cloud.com/beajzoq1yzlj5drogqzl
-    username: ucet1kqkhzpz25to
-    password: Ktsk8XnHeoVkYA0ZI5aM
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQLDialect
-
   #WebClient configuration
   webflux:
     client:
@@ -38,7 +22,6 @@ logging:
     root: info
     org:
       springframework: error
-    # Add WebClient specific logging
     org.springframework.web.reactive.function.client.WebClient: ERROR
   file:
     name: logs/application.log
@@ -48,7 +31,7 @@ logging:
 #External APIs configuration
 external-apis:
   api1:
-    base-url: http://localhost:8086/api/v1/user
+    base-url: https://parfinancieraspringboot-2.onrender.com/api/v1/user
     connection-timeout: 5000
     read-timeout: 5000
     write-timeout: 5000
@@ -57,3 +40,5 @@ external-apis:
       initial-interval: 1000
       multiplier: 2.0
       max-interval: 10000
+
+#perfil test
