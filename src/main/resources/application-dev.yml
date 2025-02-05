@@ -37,9 +37,9 @@ logging:
   level:
     root: info
     org:
-      springframework: error
+      springframework: debug
     # Add WebClient specific logging
-    org.springframework.web.reactive.function.client.WebClient: ERROR
+    org.springframework.web.reactive.function.client.WebClient: DEBUG
   file:
     name: logs/application.log
     max-size: 10MB

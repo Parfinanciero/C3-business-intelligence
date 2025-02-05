@@ -3,6 +3,7 @@ package com.BI.dto.ResponseDto;
 public class SuggestionsDto {
     private String suggestion;
 
+    public SuggestionsDto() {}
     public SuggestionsDto(String suggestion) {
         this.suggestion = suggestion;
     }

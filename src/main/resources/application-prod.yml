@@ -5,6 +5,14 @@ spring:
   profiles:
     active: prod
 
+
+#Springdoc configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+
 # Configuración de las APIs externas
 external:
   api1:
