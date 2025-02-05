@@ -1,6 +1,6 @@
 #Server configuration
 server:
-  port: 8047
+  port: 8081
 
   #WebClient configuration
   webflux:
