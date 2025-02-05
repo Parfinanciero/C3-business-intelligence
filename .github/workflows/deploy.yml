@@ -58,9 +58,8 @@ jobs:
           echo "Copiando el nuevo JAR..."
           scp -P ${{ secrets.PORT }} target/*.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$DEPLOY_DIR/
 
-          echo "Iniciando la aplicación en segundo plano..."
-          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "\
-            nohup java -jar $DEPLOY_DIR/$APP_JAR > $LOGS_DIR/output.log 2>&1 & \
-          "
+          # Ejecutar el script init.sh del backend
+          echo "Iniciando backend con init.sh..."
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'bash /var/www/backend-bi/C3-business-intelligence/init.sh start'
 
-          echo "Deploy completed"
+          echo "Deploy completed"
