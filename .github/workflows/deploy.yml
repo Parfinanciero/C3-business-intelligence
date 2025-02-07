@@ -33,7 +33,7 @@ jobs:
           mkdir -p ~/.ssh
           ssh-keyscan -p ${{ secrets.PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
-      # 5. Configurar la clave SSH para el acceso (agente SSH)
+      # 5. Configurar la clave SSH para el acceso
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
@@ -43,23 +43,21 @@ jobs:
       - name: Deploy to VPS
         run: |
           DEPLOY_DIR="/var/www/backend-bi/C3-business-intelligence/target"
-          LOGS_DIR="$DEPLOY_DIR/logs"
           APP_JAR="Bussines-intelligence-0.0.1-SNAPSHOT.jar"
 
-          # Asignar permisos al directorio de destino para el usuario (si es necesario)
-          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo chown -R ${{ secrets.SERVER_USER }}:$${{ secrets.SERVER_USER }} $DEPLOY_DIR || true"
-          
-          echo "Matando proceso anterior (si existe)..."
+          echo "Matando procesos de Java anteriores..."
           ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo pkill -f $APP_JAR || true"
           
-          # Agregar este comando para eliminar el proceso nohup
+          echo "Eliminando posibles procesos nohup..."
           ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo pkill -f nohup || true"
+
+          echo "Eliminando JAR antiguo..."
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "rm -f $DEPLOY_DIR/$APP_JAR || true"
 
           echo "Copiando el nuevo JAR..."
           scp -P ${{ secrets.PORT }} target/*.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$DEPLOY_DIR/
 
-          # Ejecutar el script init.sh del backend
           echo "Iniciando backend con init.sh..."
-          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} 'bash /var/www/backend-bi/C3-business-intelligence/init.sh start'
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "bash /var/www/backend-bi/C3-business-intelligence/init.sh start"
 
-          echo "Deploy completed"
+          echo "Despliegue completado"
