@@ -63,3 +63,4 @@ jobs:
           ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "bash $INIT_SCRIPT start"
 
           echo "Despliegue completado"
+
