@@ -1,13 +1,17 @@
-name: Deploy to VPS
+name: Deploy Backend to VPS
 
 on:
   push:
+    branches:
+      - main
+  pull_request:
     branches:
       - main
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    run-name: "Deploy Backend BI to VPS"
 
     steps:
       # 1. Checkout del código
@@ -21,7 +25,7 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      # 3. Construir el Jar con Maven
+      # 3. Construir el JAR con Maven
       - name: Build JAR file with Maven
         run: |
           mvn clean package
@@ -57,7 +61,7 @@ jobs:
           echo "Copiando el nuevo JAR..."
           scp -P ${{ secrets.PORT }} target/*.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$DEPLOY_DIR/
 
-          echo "Iniciando backend con init.sh..."
+          echo "Ejecutando el script de inicio..."
           ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "bash /var/www/backend-bi/C3-business-intelligence/init.sh start"
 
           echo "Despliegue completado"
