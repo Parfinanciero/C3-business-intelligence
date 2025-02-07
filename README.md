@@ -49,7 +49,7 @@ src/
 ├── App.jsx      # Main application configuration.
 ├── main.jsx     # React entry point.
 ```
-
+b
 ---
 
 ## 🔄 Future Integrations
