@@ -61,3 +61,4 @@ jobs:
           ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "bash /var/www/backend-bi/C3-business-intelligence/init.sh start"
 
           echo "Despliegue completado"
+
