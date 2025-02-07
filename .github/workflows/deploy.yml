@@ -1,11 +1,9 @@
-name: Deploy to VPS
-run-name: "Deploy Backend VPS"
+name: Deploy Backend to VPS
 
 on:
   push:
     branches:
       - main
-
   pull_request:
     branches:
       - main
@@ -13,54 +11,57 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    run-name: "Deploy Backend BI to VPS"
 
     steps:
+      # 1. Checkout del código
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # 2. Configurar Java
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
           java-version: '21'
           distribution: 'temurin'
 
+      # 3. Construir el JAR con Maven
       - name: Build JAR file with Maven
         run: |
           mvn clean package
           ls -l target/*.jar
 
+      # 4. Añadir el host SSH a known_hosts
       - name: Add SSH Key to Known Hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -p ${{ secrets.PORT }} -H ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
 
+      # 5. Configurar la clave SSH para el acceso
       - name: Set up SSH
         uses: webfactory/ssh-agent@v0.5.3
         with:
           ssh-private-key: ${{ secrets.SERVER_KEY }}
 
+      # 6. Desplegar la aplicación en la VPS
       - name: Deploy to VPS
         run: |
           DEPLOY_DIR="/var/www/backend-bi/C3-business-intelligence/target"
           APP_JAR="Bussines-intelligence-0.0.1-SNAPSHOT.jar"
-          INIT_SCRIPT="/var/www/backend-bi/C3-business-intelligence/init.sh"
 
-          echo "Matando todos los procesos de Java..."
-          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "\
-            sudo pkill -f java || true \
-          "
+          echo "Matando procesos de Java anteriores..."
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo pkill -f $APP_JAR || true"
+          
+          echo "Eliminando posibles procesos nohup..."
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "sudo pkill -f nohup || true"
 
-          echo "Eliminando JAR antiguo si existe..."
+          echo "Eliminando JAR antiguo..."
           ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "rm -f $DEPLOY_DIR/$APP_JAR || true"
 
           echo "Copiando el nuevo JAR..."
           scp -P ${{ secrets.PORT }} target/*.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:$DEPLOY_DIR/
 
-          echo "Otorgando permisos de ejecución al script init.sh..."
-          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "chmod +x $INIT_SCRIPT"
-
-          echo "Iniciando backend con init.sh..."
-          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "bash $INIT_SCRIPT start"
+          echo "Ejecutando el script de inicio..."
+          ssh -p ${{ secrets.PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "bash /var/www/backend-bi/C3-business-intelligence/init.sh start"
 
           echo "Despliegue completado"
-
