@@ -44,7 +44,7 @@ src/main/java/com/miempresa/microservicio
 src/
 ├── components   # Reusable UI components.
 ├── pages        # Main system views.
-├── services     # Logic for backend communication.
+├── index.js    
 ├── styles       # Encapsulated styles.
 ├── App.jsx      # Main application configuration.
 ├── main.jsx     # React entry point.
